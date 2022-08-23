@@ -5,23 +5,149 @@
 - name: Set platform/version specific variables
   include_tasks: tasks/set_vars.yml
 
-# Examples of some tasks:
-- name: Ensure required packages are installed
+- name: Check if requested version is supported in the system (RHEL8)
+  fail:
+    msg: "RHEL 8 supports only Postgresql 10, 12 and 13"
+  when:
+    - ansible_facts['os_family'] == "RedHat"
+    - ansible_facts['distribution_major_version'] == "8"
+    - postgresql_version not in rhel8_streams
+
+- name: Check if requested version is supported in system (RHEL9)
+  fail:
+    msg: "RHEL 9 supports only Postgresql 13"
+  when:
+    - ansible_facts['os_family'] == "RedHat"
+    - ansible_facts['distribution_major_version'] == "9"
+    - postgresql_version not in rhel9_streams
+
+- name: Check requested and installed version of Postgresql
+  fail:
+    msg: "Setting version {{ postgresql_version }} while
+      {{ ansible_facts.packages['postgresql'][0].version }} is installed"
+  when:
+    - "'postgresql' in ansible_facts.packages"
+    - ansible_facts.packages['postgresql'][0].version |
+      regex_search('([0-9]*).', '\\1') | first !=  postgresql_version
+
+- name: Ensure required packages are installed on RHEL8 based systems
   package:
-    name: "{{ __template_packages }}"
+    name: "@postgresql:{{ postgresql_version }}/server"
     state: present
+  when:
+    - ansible_facts['os_family'] == "RedHat"
+    - ansible_facts['distribution_major_version'] == "8"
 
-- name: Ensure required services are enabled and started
-  service:
-    name: "{{ item }}"
-    state: started
-    enabled: yes
-  loop: "{{ __template_services }}"
+# RHEL 9 doesn't support modules yet
+- name: Ensure required packages are installed on RHEL9 based systems and others
+  package:
+    name: "postgresql-server"
+    state: present
+  when:
+    - ansible_facts['distribution_major_version'] != "8"
 
-- name: Generate /etc/{{ __template_foo_config }}
+- name: Init DB and set up password
+  block:
+    - name: Init DB
+      command:
+        cmd: postgresql-setup --initdb
+        creates: /var/lib/pgsql/data/postgresql.conf
+
+    - name: Start Postgresql server
+      service:
+        name: "postgresql"
+        state: started
+        enabled: yes
+
+    - name: Set password for super user
+      become: yes
+      become_user: postgres
+      environment:
+        PGPASSWORD: "{{ postgresql_password }}"
+      command:
+        cmd: >
+          psql -c "ALTER USER postgres WITH ENCRYPTED PASSWORD
+          '{{ postgresql_password }}';"
+
+    - name: Enable logging in by password
+      replace:
+        path: /var/lib/pgsql/data/pg_hba.conf
+        regexp: '(peer|ident)$'
+        replace: 'md5'
+        backup: yes
+      notify: restart postgresql
+  when:
+    - not postgresql_conf.stat.exists
+
+- name: Run provided SQL script
+  include_tasks: input_sql_file.yml
+  when: postgresql_input_file is defined
+
+- name: Install TLS certificates for postgresql
+  file:
+    src: "/etc/pki/tls/certs/{{ cert_name }}.crt"
+    dest: "/var/lib/pgsql/data/{{ cert_name }}.crt"
+    state: link
+    owner: postgres
+  when:
+    - crt_file.stat.exists
+    - key_file.stat.exists
+
+- name: Install postgresql server private key
+  file:
+    src: "/etc/pki/tls/private/{{ cert_name }}.key"
+    dest: "/var/lib/pgsql/data/{{ cert_name }}.key"
+    state: link
+    owner: postgres
+  when:
+    - crt_file.stat.exists
+    - key_file.stat.exists
+
+- name: Enable SSL
+  replace:
+    path: "/var/lib/pgsql/data/postgresql.conf"
+    regexp: '#(ssl\s=\s).*$'
+    replace: '\1on'
+  when:
+    - crt_file.stat.exists
+    - key_file.stat.exists
+    - ssl_enable is defined
+  notify: restart postgresql
+
+- name: Set up recommanded shared_buffers size
+  replace:
+    path: "/var/lib/pgsql/data/postgresql.conf"
+    regexp: '(shared_buffers\s=\s)([0-9]+)(\w\w)'
+    replace: '\1 {{ (ansible_memory_mb.real.total/4)|int|abs  }}MB'
+  when: server_tuning
+
+- name: Set up recommended cache_size
+  replace:
+    path: "/var/lib/pgsql/data/postgresql.conf"
+    regexp: '#(effective_cache_size\s=\s)[0-9]+\w\w'
+    replace: '\1 {{ (ansible_memory_mb.real.total/2)|int|abs  }}MB'
+  when: server_tuning
+
+- name: Configure pg_hba.conf
+  become: yes
   template:
-    src: "{{ __template_foo_config }}.j2"
-    dest: /etc/{{ __template_foo_config }}
     backup: yes
-    mode: 0400
-  notify: template handler to restart services
+    dest: "/var/lib/pgsql/data/pg_hba.conf"
+    src: pg_hba.conf.j2
+    mode: 0600
+    owner: postgres
+    group: postgres
+  when: pg_hba_conf is defined
+  notify: restart postgresql
+
+- name: Configure postgresql.conf
+  become: yes
+  template:
+    backup: yes
+    dest: "/var/lib/pgsql/data/postgresql.conf"
+    src: postgresql.conf.j2
+    mode: 0600
+    owner: postgres
+    group: postgres
+  when: postgresql_server_conf is defined
+  notify: restart postgresql

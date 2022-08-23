@@ -1,0 +1,10 @@
+---
+- name: Simple deploy PostgreSQL server version 10
+  hosts: localhost
+  vars:
+    postgresql_version: "10"
+
+  tasks:
+    - name: Configure postgresql using role
+      import_role:
+        name: linux-system-roles.postgresql
