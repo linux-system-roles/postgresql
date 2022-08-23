@@ -22,12 +22,12 @@
     PGPASSWORD: "{{ postgresql_password }}"
   command:
     cmd: psql -U postgres -f "/tmp/input.sql"
-  register: psql_output
+  register: __postgresql_output
   changed_when: false
 
 - name: Print the output of psql command for {{ postgresql_input_file }}
   debug:
-    msg: "{{ psql_output }}"
+    msg: "{{ __postgresql_output }}"
 
 - name: Remove sql script {{ postgresql_input_file }} from the host
   file:
