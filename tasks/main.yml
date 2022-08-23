@@ -41,7 +41,7 @@
 # RHEL 9 doesn't support modules yet
 - name: Ensure required packages are installed on RHEL9 based systems and others
   package:
-    name: "postgresql-server"
+    name: postgresql-server
     state: present
   when:
     - ansible_facts['distribution_major_version'] != "8"
@@ -55,7 +55,7 @@
 
     - name: Start Postgresql server
       service:
-        name: "postgresql"
+        name: postgresql
         state: started
         enabled: yes
 
@@ -76,8 +76,7 @@
         replace: 'md5'
         backup: yes
       notify: restart postgresql
-  when:
-    - not postgresql_conf.stat.exists
+  when: not __postgresql_conf.stat.exists
 
 - name: Run provided SQL script
   include_tasks: input_sql_file.yml
@@ -85,33 +84,33 @@
 
 - name: Install TLS certificates for postgresql
   file:
-    src: "/etc/pki/tls/certs/{{ cert_name }}.crt"
-    dest: "/var/lib/pgsql/data/{{ cert_name }}.crt"
+    src: /etc/pki/tls/certs/{{ cert_name }}.crt
+    dest: /var/lib/pgsql/data/{{ cert_name }}.crt
     state: link
     owner: postgres
   when:
-    - crt_file.stat.exists
-    - key_file.stat.exists
+    - __postgresql_cert.stat.exists
+    - __postgresql_key.stat.exists
 
 - name: Install postgresql server private key
   file:
-    src: "/etc/pki/tls/private/{{ cert_name }}.key"
-    dest: "/var/lib/pgsql/data/{{ cert_name }}.key"
+    src: /etc/pki/tls/private/{{ cert_name }}.key
+    dest: /var/lib/pgsql/data/{{ cert_name }}.key
     state: link
     owner: postgres
   when:
-    - crt_file.stat.exists
-    - key_file.stat.exists
+    - __postgresql_cert.stat.exists
+    - __postgresql_key.stat.exists
 
 - name: Enable SSL
   replace:
-    path: "/var/lib/pgsql/data/postgresql.conf"
+    path: /var/lib/pgsql/data/postgresql.conf
     regexp: '#(ssl\s=\s).*$'
     replace: '\1on'
   when:
-    - crt_file.stat.exists
-    - key_file.stat.exists
-    - ssl_enable is defined
+    - __postgresql_cert.stat.exists
+    - __postgresql_key.stat.exists
+    - postgresql_ssl_enable is defined
   notify: restart postgresql
 
 - name: Set up recommanded shared_buffers size
@@ -119,14 +118,14 @@
     path: "/var/lib/pgsql/data/postgresql.conf"
     regexp: '(shared_buffers\s=\s)([0-9]+)(\w\w)'
     replace: '\1 {{ (ansible_memory_mb.real.total/4)|int|abs  }}MB'
-  when: server_tuning
+  when: postgresql_server_tuning
 
 - name: Set up recommended cache_size
   replace:
     path: "/var/lib/pgsql/data/postgresql.conf"
     regexp: '#(effective_cache_size\s=\s)[0-9]+\w\w'
     replace: '\1 {{ (ansible_memory_mb.real.total/2)|int|abs  }}MB'
-  when: server_tuning
+  when: postgresql_server_tuning
 
 - name: Configure pg_hba.conf
   become: yes
@@ -137,7 +136,7 @@
     mode: 0600
     owner: postgres
     group: postgres
-  when: pg_hba_conf is defined
+  when: postgresql_pg_hba_conf is defined
   notify: restart postgresql
 
 - name: Configure postgresql.conf

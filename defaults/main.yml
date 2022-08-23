@@ -6,5 +6,5 @@
 # Examples of role input variables:
 postgresql_version: "13"
 postgresql_password: "mysecretpassword"
-cert_name: "server"
-server_tuning: true
+postgresql_cert_name: "server"
+postgresql_server_tuning: true

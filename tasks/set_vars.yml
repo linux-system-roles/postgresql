@@ -6,17 +6,17 @@
 - name: "Check postgresql.conf"
   stat:
     path: /var/lib/pgsql/data/postgresql.conf
-  register: postgresql_conf
+  register: __postgresql_conf
 
 - name: "Check TLS crt file"
   stat:
     path: "/etc/pki/tls/certs/{{ cert_name }}.crt"
-  register: crt_file
+  register: __postgresql_cert
 
 - name: "Check TLS private key file"
   stat:
     path: "/etc/pki/tls/private/{{ cert_name }}.key"
-  register: key_file
+  register: __postgresql_key
 
 - name: "Supported streams in RHEL8"
   set_fact:
