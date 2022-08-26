@@ -58,6 +58,16 @@ you can also use certificate system role. For more detail see [`examples/`](exam
 ```yaml
 postgresql_cert_name: "server"
 ```
+### postgresql_key_path
+Optionaly you can specify path to server key using `postgresql_key_path` variable. The default value is
+```yaml
+postgresql_key_path: "/etc/pki/tls/private"
+```
+### postgresql_cert_path
+Optionaly you can specify path to server cert using `postgresql_cert_path` variable. The default value is
+```ymal
+postgresql_cert_path: "/etc/pki/tls/certs"
+```
 ### postgresql_input_file
 For running SQL script define path to your SQL file using `postgresql_input_file`:
 ```yaml
