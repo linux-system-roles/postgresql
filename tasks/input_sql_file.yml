@@ -6,14 +6,21 @@
       the database.
 
 - name: Copy SQL file on the host
-  copy:
-    src: "{{ postgresql_input_file }}"
-    dest: "/tmp/input.sql"
-    owner: postgres
-    group: postgres
-    mode: '0666'
-  tags:
-    - dir_not_exist
+  block:
+    - name: Create a tempfile for the SQL file on the host
+      tempfile:
+        state: file
+      register: __postgresql_sql_tempfile
+      changed_when: false
+
+    - name: Copy the {{ postgresql_input_file }} file to the host
+      copy:
+        src: "{{ postgresql_input_file }}"
+        dest: "{{ __postgresql_sql_tempfile.path }}"
+        owner: postgres
+        group: postgres
+        mode: '0600'
+        changed_when: false
 
 - name: Run sql script from {{ postgresql_input_file }}
   become: yes
@@ -21,7 +28,7 @@
   environment:
     PGPASSWORD: "{{ postgresql_password }}"
   command:
-    cmd: psql -U postgres -f "/tmp/input.sql"
+    cmd: psql -U postgres -f "{{ __postgresql_sql_tempfile.path }}"
   register: __postgresql_output
   changed_when: false
 
