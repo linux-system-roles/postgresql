@@ -23,8 +23,9 @@
 
 - name: Check requested and installed version of Postgresql
   fail:
-    msg: "Setting version {{ postgresql_version }} while
-      {{ ansible_facts.packages['postgresql'][0].version }} is installed"
+    msg: >-
+      Setting version {{ postgresql_version }} while
+      {{ ansible_facts.packages['postgresql'][0].version }} is installed
   when:
     - "'postgresql' in ansible_facts.packages"
     - ansible_facts.packages['postgresql'][0].version |
