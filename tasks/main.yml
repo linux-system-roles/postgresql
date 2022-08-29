@@ -11,7 +11,7 @@
   when:
     - ansible_facts['os_family'] == "RedHat"
     - ansible_facts['distribution_major_version'] == "8"
-    - postgresql_version not in rhel8_streams
+    - postgresql_version not in __postgresql_versions_el8
 
 - name: Check if requested version is supported in system (RHEL9)
   fail:
@@ -19,7 +19,7 @@
   when:
     - ansible_facts['os_family'] == "RedHat"
     - ansible_facts['distribution_major_version'] == "9"
-    - postgresql_version not in rhel9_streams
+    - postgresql_version not in __postgresql_versions_el9
 
 - name: Check requested and installed version of Postgresql
   fail:

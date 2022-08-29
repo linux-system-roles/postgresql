@@ -6,7 +6,9 @@
 
 # Examples of non-distribution specific (generic) internal variables:
 __postgresql_packages: [postgresql-server]
-# ansible_facts required by the role
+__postgresql_versions_el8: ["10", "12", "13"]
+__postgresql_versions_el9: ["13"]
+  # ansible_facts required by the role
 __postgresql_required_facts:
   - distribution
   - distribution_major_version
