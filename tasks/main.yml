@@ -30,21 +30,10 @@
     - ansible_facts.packages['postgresql'][0].version |
       regex_search('([0-9]*).', '\\1') | first !=  postgresql_version
 
-- name: Ensure required packages are installed on RHEL8 based systems
+- name: Ensure required packages are installed
   package:
-    name: "@postgresql:{{ postgresql_version }}/server"
+    name: "{{ __postgresql_packages }}"
     state: present
-  when:
-    - ansible_facts['os_family'] == "RedHat"
-    - ansible_facts['distribution_major_version'] == "8"
-
-# RHEL 9 doesn't support modules yet
-- name: Ensure required packages are installed on RHEL9 based systems and others
-  package:
-    name: postgresql-server
-    state: present
-  when:
-    - ansible_facts['distribution_major_version'] != "8"
 
 - name: Init DB and set up password
   block:
