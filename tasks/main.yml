@@ -129,14 +129,21 @@
   when: postgresql_pg_hba_conf is defined
   notify: restart postgresql
 
-- name: Configure postgresql.conf
+- name: Generate postgresql_ansible.conf
   become: yes
   template:
     backup: yes
-    dest: "/var/lib/pgsql/data/postgresql.conf"
+    dest: "/var/lib/pgsql/data/postgresql_ansible.conf"
     src: postgresql.conf.j2
     mode: 0600
     owner: postgres
     group: postgres
+  when: postgresql_server_conf is defined
+
+- name: Configure postgresql.conf
+  replace:
+    path: "/var/lib/pgsql/data/postgresql.conf"
+    regexp: '#(include_if_exists\s=\s\'')\.\.\.(\'').*'
+    replace: '\1 postgresql_ansible.conf \2'
   when: postgresql_server_conf is defined
   notify: restart postgresql
