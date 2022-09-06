@@ -1,5 +1,5 @@
 # PostgreSQL system role
-![CI Testing](https://github.com/linux-system-roles/template/workflows/tox/badge.svg)
+![CI Testing](https://github.com/linux-system-roles/postgresql/workflows/tox/badge.svg)
 
 This role installs, configures, and starts PostgreSQL Server.
 
