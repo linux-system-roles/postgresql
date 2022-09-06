@@ -1,27 +1,15 @@
 ---
-- name: "Gather the packages facts"
-  ansible.builtin.package_facts:
-    manager: rpm
-
-- name: "Check postgresql.conf"
+- name: Check postgresql.conf
   stat:
     path: /var/lib/pgsql/data/postgresql.conf
   register: __postgresql_conf
 
-- name: "Check TLS crt file"
+- name: Check TLS crt file
   stat:
     path: "{{ postgresql_cert_path }}/{{ cert_name }}.crt"
   register: __postgresql_cert
 
-- name: "Check TLS private key file"
+- name: Check TLS private key file
   stat:
     path: "{{ postgresql_key_path }}/{{ cert_name }}.key"
   register: __postgresql_key
-
-- name: "Supported streams in RHEL8"
-  set_fact:
-    rhel8_streams: ["10", "12", "13"]
-
-- name: "Supported streams in RHEL9"
-  set_fact:
-    rhel9_streams: ["13"]
