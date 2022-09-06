@@ -7,18 +7,18 @@
 
 - name: Check if requested version is supported in the system (RHEL8)
   fail:
-    msg: "RHEL 8 supports only Postgresql 10, 12 and 13"
+    msg: RHEL 8 supports only Postgresql 10, 12 and 13
   when:
-    - ansible_facts['os_family'] == "RedHat"
-    - ansible_facts['distribution_major_version'] == "8"
+    - ansible_facts["os_family"] == "RedHat"
+    - ansible_facts["distribution_major_version"] == "8"
     - postgresql_version not in __postgresql_versions_el8
 
 - name: Check if requested version is supported in system (RHEL9)
   fail:
-    msg: "RHEL 9 supports only Postgresql 13"
+    msg: RHEL 9 supports only Postgresql 13
   when:
-    - ansible_facts['os_family'] == "RedHat"
-    - ansible_facts['distribution_major_version'] == "9"
+    - ansible_facts["os_family"] == "RedHat"
+    - ansible_facts["distribution_major_version"] == "9"
     - postgresql_version not in __postgresql_versions_el9
 
 - name: Check requested and installed version of Postgresql
@@ -28,7 +28,7 @@
       {{ ansible_facts.packages['postgresql'][0].version }} is installed
   when:
     - "'postgresql' in ansible_facts.packages"
-    - ansible_facts.packages['postgresql'][0].version |
+    - ansible_facts.packages["postgresql"][0].version |
       regex_search('([0-9]*).', '\\1') | first !=  postgresql_version
 
 - name: Ensure required packages are installed
