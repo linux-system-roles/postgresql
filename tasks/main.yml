@@ -40,7 +40,7 @@
     name: "{{ __postgresql_packages }}"
     state: present
 
-- name: Init DB and set up password
+- name: Init DB
   block:
     - name: Init DB
       command:
@@ -52,7 +52,10 @@
         name: postgresql
         state: started
         enabled: yes
+  when: not __postgresql_conf.stat.exists
 
+- name: Set and enable password
+  block:
     - name: Set password for super user
       become: yes
       become_user: postgres
@@ -63,7 +66,6 @@
           psql -c "ALTER USER postgres WITH ENCRYPTED PASSWORD
           '{{ postgresql_password }}';"
       no_log: true
-      when: postgresql_password is defined
 
     - name: Enable logging in by password
       replace:
@@ -73,8 +75,7 @@
         backup: yes
       notify: restart postgresql
   when:
-    - not __postgresql_conf.stat.exists
-    - postgresql_password is not none
+    - postgresql_password is defined
 
 - name: Run provided SQL script
   include_tasks: input_sql_file.yml
