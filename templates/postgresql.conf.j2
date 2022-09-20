@@ -1,7 +1,4 @@
-#------------------------------------------------------------------------------
-# PostgreSQL configuration file managed by ansible
-# CUSTOMIZED (ANSIBLE) OPTIONS
-#------------------------------------------------------------------------------
+{{ ansible_managed | comment }}
 
 {% for item in postgresql_server_conf %}
 {{ item }} = {{ postgresql_server_conf[item] }}
