@@ -13,7 +13,8 @@ Allow set up version of Postgresql server. This role supports Postgresql 10 12 a
 postgresql_version: "13"
 ```
 ### postgresql_password
-Set up default password for database super user `postgres`
+Optionally you can be set up password for database super user `postgres` by default
+there is not a passwordi, datababase is accesible from `postgres` system account via UNIX socket.
 ```yaml
 postgresql_password: "mysecretpassword"
 ```
