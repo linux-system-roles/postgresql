@@ -13,10 +13,13 @@ Allow set up version of Postgresql server. This role supports Postgresql 10 12 a
 postgresql_version: "13"
 ```
 ### postgresql_password
-Optionally you can be set up password for database super user `postgres` by default
-there is not a passwordi, datababase is accesible from `postgres` system account via UNIX socket.
+Optionally, you can set up password for database super user `postgres` by default
+there is not a password, datababase is accessible from `postgres` system account via UNIX socket.
+users are encouraged to use ansible vault
 ```yaml
-postgresql_password: "mysecretpassword"
+postgresql_password: !vault |
+          $ANSIBLE_VAULT;1.2;AES256;dev
+          ....
 ```
 ### postgresql_pg_hba_conf
 A description of input variables that are not reqiured. Upstream configuration is used by default.
@@ -92,7 +95,9 @@ More about usage could be found in [`examples/`](examples) directory
 - hosts: all
   vars:
     postgresql_version: "13"
-    postgresql_password: "passwd"
+    postgresql_password: !vault |
+          $ANSIBLE_VAULT;1.2;AES256;dev
+          ....
 
   roles:
     - linux-system-roles.postgresql
