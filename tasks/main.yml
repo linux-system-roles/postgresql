@@ -83,8 +83,8 @@
 
 - name: Install TLS certificates for postgresql
   file:
-    src: "{{ postgresql_cert_path }}/{{ cert_name }}.crt"
-    dest: /var/lib/pgsql/data/{{ cert_name }}.crt
+    src: "{{ postgresql_cert_path }}/{{ postgresql_cert_name }}.crt"
+    dest: /var/lib/pgsql/data/{{ postgresql_cert_name }}.crt
     state: link
     owner: postgres
   when:
@@ -93,8 +93,8 @@
 
 - name: Install postgresql server private key
   file:
-    src: "{{ postgresql_key_path }}/{{ cert_name }}.key"
-    dest: /var/lib/pgsql/data/{{ cert_name }}.key
+    src: "{{ postgresql_key_path }}/{{ postgresql_cert_name }}.key"
+    dest: /var/lib/pgsql/data/{{ postgresql_cert_name }}.key
     state: link
     owner: postgres
   when:
@@ -138,21 +138,27 @@
   when: postgresql_pg_hba_conf is defined
   notify: restart postgresql
 
-- name: Generate postgresql_ansible.conf
-  become: yes
-  template:
-    backup: yes
-    dest: "/var/lib/pgsql/data/postgresql_ansible.conf"
-    src: postgresql.conf.j2
-    mode: 0600
-    owner: postgres
-    group: postgres
-  when: postgresql_server_conf is defined
+- name: Generate postgresql system-roles.conf
+  block:
+    - name: Create postgresql directory in /etc
+      file:
+        path: /etc/postgresql
+        state: directory
+        mode: '0755'
 
-- name: Configure postgresql.conf
-  replace:
-    path: "/var/lib/pgsql/data/postgresql.conf"
-    regexp: '#(include_if_exists\s=\s\'')\.\.\.(\'').*'
-    replace: '\1 postgresql_ansible.conf \2'
+    - name: Generate postgresql system-roles.conf
+      become: yes
+      template:
+        backup: yes
+        dest: "/etc/postgresql/system-roles.conf"
+        src: postgresql.conf.j2
+        mode: 0600
+        owner: postgres
+        group: postgres
+
+    - name: Link generated conf file with server one
+      lineinfile:
+        path: /var/lib/pgsql/data/postgresql.conf
+        line: "include_if_exists = '/etc/postgresql/system-roles.conf'"
+      notify: restart postgresql
   when: postgresql_server_conf is defined
-  notify: restart postgresql
