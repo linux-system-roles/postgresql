@@ -1,5 +1,5 @@
 {{ ansible_managed | comment }}
 
-{% for item in postgresql_server_conf %}
-{{ item }} = {{ postgresql_server_conf[item] }}
+{% for key, value in postgresql_server_conf.items() %}
+{{ key }} = {{ value }}
 {% endfor %}

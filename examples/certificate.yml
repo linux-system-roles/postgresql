@@ -3,13 +3,13 @@
          key and certificate is provided by certificate system role"
   hosts: localhost
   vars:
-    pg_hba_conf:
+    postgresql_pg_hba_conf:
       - type: hostssl
         database: all
         user: all
         auth_method: md5
         address: '127.0.0.1/32'
-    ssl_enable: yes
+    postgresql_ssl_enable: yes
     certificate_requests:
       - name: server
         dns: www.example.com

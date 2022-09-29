@@ -4,9 +4,10 @@
 # This file also serves as a documentation for such a variables.
 
 # Examples of role input variables:
-postgresql_version: "13"
-# postgresql_password: ""
-postgresql_cert_name: "server"
+postgresql_version: 13
+postgresql_password: null
+postgresql_cert_name: server
 postgresql_server_tuning: true
-postgresql_key_path: "/etc/pki/tls/private"
-postgresql_cert_path: "/etc/pki/tls/certs"
+postgresql_key_path: /etc/pki/tls/private
+postgresql_cert_path: /etc/pki/tls/certs
+postgresql_ssl_enable: False

@@ -60,12 +60,12 @@ To specify certificate name use `postgresql_cert_name` variable.
 You can copy your certificate to `/etc/pki/tls/certs/server.crt` and key to `/etc/pki/tls/private/server.key` or
 you can also use certificate system role. For more detail see [`examples/`](examples).
 ```yaml
-postgresql_cert_name: "server"
+postgresql_cert_name: server
 ```
 ### postgresql_key_path
 Optionaly you can specify path to server key using `postgresql_key_path` variable. The default value is
 ```yaml
-postgresql_key_path: "/etc/pki/tls/private"
+postgresql_key_path: /etc/pki/tls/private
 ```
 ### postgresql_cert_path
 Optionaly you can specify path to server cert using `postgresql_cert_path` variable. The default value is
