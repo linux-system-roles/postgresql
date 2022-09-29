@@ -53,7 +53,7 @@ postgresql_server_conf:
 ### postgresql_ssl_enable
 To set up ssl connection it's necessary to set up `postgresql_ssl_enable` variable and provide server certificate and key.
 ```yaml
-postgresql_ssl_enable: yes
+postgresql_ssl_enable: True
 ```
 ### postgresql_cert_name
 To specify certificate name use `postgresql_cert_name` variable.
@@ -82,7 +82,7 @@ By default the system role makes server settings tuning based on system resource
 This functionality is enabled by default. For disabling it there is a possibility to
 set up the `postgresql_server_tuning` variable.
 ```yaml
-postgresql_server_tuning: false
+postgresql_server_tuning: False
 ```
 
 More about usage could be found in [`examples/`](examples) directory
