@@ -1,0 +1,6 @@
+---
+- hosts: localhost
+  vars:
+    postgresql_version: "10"
+  roles:
+    name: linux-system-roles.postgresql

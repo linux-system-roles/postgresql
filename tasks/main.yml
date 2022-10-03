@@ -5,23 +5,160 @@
 - name: Set platform/version specific variables
   include_tasks: tasks/set_vars.yml
 
-# Examples of some tasks:
+- name: Gather the package facts
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Check if requested version is supported in the system (RHEL8)
+  fail:
+    msg: RHEL 8 supports only Postgresql 10, 12 and 13
+  when:
+    - ansible_facts["os_family"] == "RedHat"
+    - ansible_facts["distribution_major_version"] == "8"
+    - postgresql_version not in __postgresql_versions_el8
+
+- name: Check if requested version is supported in system (RHEL9)
+  fail:
+    msg: RHEL 9 supports only Postgresql 13
+  when:
+    - ansible_facts["os_family"] == "RedHat"
+    - ansible_facts["distribution_major_version"] == "9"
+    - postgresql_version not in __postgresql_versions_el9
+
+- name: Check requested and installed version of Postgresql
+  fail:
+    msg: >-
+      Setting version {{ postgresql_version }} while
+      {{ ansible_facts.packages['postgresql'][0].version }} is installed
+  when:
+    - "'postgresql' in ansible_facts.packages"
+    - ansible_facts.packages["postgresql"][0].version |
+      regex_search('([0-9]*).', '\\1') | first !=  postgresql_version
+
 - name: Ensure required packages are installed
   package:
-    name: "{{ __template_packages }}"
+    name: "{{ __postgresql_packages }}"
     state: present
 
-- name: Ensure required services are enabled and started
-  service:
-    name: "{{ item }}"
-    state: started
-    enabled: yes
-  loop: "{{ __template_services }}"
+- name: Init DB
+  block:
+    - name: Init DB
+      command:
+        cmd: postgresql-setup --initdb
+        creates: /var/lib/pgsql/data/postgresql.conf
 
-- name: Generate /etc/{{ __template_foo_config }}
+    - name: Start Postgresql server
+      service:
+        name: postgresql
+        state: started
+        enabled: yes
+  when: not __postgresql_conf.stat.exists
+
+- name: Set and enable password
+  block:
+    - name: Set password for super user
+      become: yes
+      become_user: postgres
+      environment:
+        PGPASSWORD: "{{ postgresql_password }}"
+      command:
+        cmd: >
+          psql -c "ALTER USER postgres WITH ENCRYPTED PASSWORD
+          '{{ postgresql_password }}';"
+      no_log: true
+
+    - name: Enable logging in by password
+      replace:
+        path: /var/lib/pgsql/data/pg_hba.conf
+        regexp: '(peer|ident)$'
+        replace: 'md5'
+        backup: yes
+      notify: restart postgresql
+  when:
+    - postgresql_password is defined
+
+- name: Run provided SQL script
+  include_tasks: input_sql_file.yml
+  when: postgresql_input_file is defined
+
+- name: Install TLS certificates for postgresql
+  file:
+    src: "{{ postgresql_cert_path }}/{{ postgresql_cert_name }}.crt"
+    dest: /var/lib/pgsql/data/{{ postgresql_cert_name }}.crt
+    state: link
+    owner: postgres
+  when:
+    - __postgresql_cert.stat.exists
+    - __postgresql_key.stat.exists
+
+- name: Install postgresql server private key
+  file:
+    src: "{{ postgresql_key_path }}/{{ postgresql_cert_name }}.key"
+    dest: /var/lib/pgsql/data/{{ postgresql_cert_name }}.key
+    state: link
+    owner: postgres
+  when:
+    - __postgresql_cert.stat.exists
+    - __postgresql_key.stat.exists
+
+- name: Enable SSL
+  replace:
+    path: /var/lib/pgsql/data/postgresql.conf
+    regexp: '#(ssl\s=\s).*$'
+    replace: '\1on'
+  when:
+    - __postgresql_cert.stat.exists
+    - __postgresql_key.stat.exists
+    - postgresql_ssl_enable is defined
+  notify: restart postgresql
+
+- name: Set up recommanded shared_buffers size
+  replace:
+    path: "/var/lib/pgsql/data/postgresql.conf"
+    regexp: '(shared_buffers\s=\s)([0-9]+)(\w\w)'
+    replace: '\1 {{ (ansible_memory_mb.real.total/4)|int|abs  }}MB'
+  when: postgresql_server_tuning
+
+- name: Set up recommended cache_size
+  replace:
+    path: "/var/lib/pgsql/data/postgresql.conf"
+    regexp: '#(effective_cache_size\s=\s)[0-9]+\w\w'
+    replace: '\1 {{ (ansible_memory_mb.real.total/2)|int|abs  }}MB'
+  when: postgresql_server_tuning
+
+- name: Configure pg_hba.conf
+  become: yes
   template:
-    src: "{{ __template_foo_config }}.j2"
-    dest: /etc/{{ __template_foo_config }}
     backup: yes
-    mode: 0400
-  notify: template handler to restart services
+    dest: "/var/lib/pgsql/data/pg_hba.conf"
+    src: pg_hba.conf.j2
+    mode: 0600
+    owner: postgres
+    group: postgres
+  when: postgresql_pg_hba_conf is defined
+  notify: restart postgresql
+
+- name: Generate postgresql system-roles.conf
+  block:
+    - name: Create postgresql directory in /etc
+      file:
+        path: /etc/postgresql
+        state: directory
+        mode: '0755'
+
+    - name: Generate postgresql system-roles.conf
+      become: yes
+      template:
+        backup: yes
+        dest: "/etc/postgresql/system-roles.conf"
+        src: postgresql.conf.j2
+        mode: 0600
+        owner: postgres
+        group: postgres
+
+    - name: Link generated conf file with server one
+      lineinfile:
+        path: /var/lib/pgsql/data/postgresql.conf
+        line: "include_if_exists = '/etc/postgresql/system-roles.conf'"
+      notify: restart postgresql
+  when: postgresql_server_conf is defined

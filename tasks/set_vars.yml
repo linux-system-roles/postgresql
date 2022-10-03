@@ -3,7 +3,7 @@
   setup:
     gather_subset: min
   when: not ansible_facts.keys() | list |
-    intersect(__template_required_facts) == __template_required_facts
+    intersect(__postgresql_required_facts) == __postgresql_required_facts
 
 - name: Set platform/version specific variables
   include_vars: "{{ __vars_file }}"
@@ -19,3 +19,18 @@
   vars:
     __vars_file: "{{ role_path }}/vars/{{ item }}"
   when: __vars_file is file
+
+- name: Check postgresql.conf
+  stat:
+    path: /var/lib/pgsql/data/postgresql.conf
+  register: __postgresql_conf
+
+- name: Check TLS crt file
+  stat:
+    path: "{{ postgresql_cert_path }}/{{ postgresql_cert_name }}.crt"
+  register: __postgresql_cert
+
+- name: Check TLS private key file
+  stat:
+    path: "{{ postgresql_key_path }}/{{ postgresql_cert_name }}.key"
+  register: __postgresql_key

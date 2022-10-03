@@ -5,11 +5,11 @@
 # value in a platform/version specific file in vars/
 
 # Examples of non-distribution specific (generic) internal variables:
-__template_foo_config: foo.conf
-__template_packages: []
-__template_services: []
+__postgresql_packages: [postgresql-server]
+__postgresql_versions_el8: ["10", "12", "13"]
+__postgresql_versions_el9: ["13"]
 # ansible_facts required by the role
-__template_required_facts:
+__postgresql_required_facts:
   - distribution
   - distribution_major_version
   - distribution_version

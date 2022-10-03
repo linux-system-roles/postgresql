@@ -2,6 +2,4 @@
 ---
 # Put internal variables here with CentOS 8 specific values.
 
-# Example:
-__template_packages: []
-__template_services: []
+__postgresql_packages: ["@postgresql:{{ postgresql_version }}/server"]

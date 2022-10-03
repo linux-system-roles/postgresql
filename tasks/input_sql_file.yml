@@ -1,0 +1,45 @@
+- name: Verify if postgresql_password is set
+  assert:
+    that: postgresql_password is defined
+    fail_msg: >-
+      You must define postgresql_password variable to be able accessing
+      the database.
+
+- name: Copy SQL file on the host
+  block:
+    - name: Create a tempfile for the SQL file on the host
+      tempfile:
+        state: file
+      register: __postgresql_sql_tempfile
+      changed_when: false
+
+    - name: Copy the {{ postgresql_input_file }} file to the host
+      copy:
+        src: "{{ postgresql_input_file }}"
+        dest: "{{ __postgresql_sql_tempfile.path }}"
+        owner: postgres
+        group: postgres
+        mode: '0600'
+        changed_when: false
+
+- name: Input {{ postgresql_input_file }} to PostgreSQL
+  block:
+
+    - name: Run SQL script
+      become: yes
+      become_user: postgres
+      environment:
+        PGPASSWORD: "{{ postgresql_password }}"
+      command:
+        cmd: psql -U postgres -f "{{ __postgresql_sql_tempfile.path }}"
+      register: __postgresql_output
+      changed_when: false
+  always:
+    - name: Print the output of psql command for {{ postgresql_input_file }}
+      debug:
+        msg: "{{ __postgresql_output }}"
+
+- name: Remove sql script {{ postgresql_input_file }} from the host
+  file:
+    state: absent
+    path: /tmp/input.sql

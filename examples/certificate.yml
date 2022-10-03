@@ -1,0 +1,20 @@
+---
+- name: "Deploy Postgresql server with ssl support,
+         key and certificate is provided by certificate system role"
+  hosts: localhost
+  vars:
+    postgresql_pg_hba_conf:
+      - type: hostssl
+        database: all
+        user: all
+        auth_method: md5
+        address: '127.0.0.1/32'
+    postgresql_ssl_enable: yes
+    certificate_requests:
+      - name: server
+        dns: www.example.com
+        ca: self-sign
+
+  roles:
+    - linux-system-roles.certificate
+    - linux-system-roles.postgresql
