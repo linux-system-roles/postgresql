@@ -54,6 +54,12 @@
         enabled: yes
   when: not __postgresql_conf.stat.exists
 
+- name: Enable and start existing instance of postgresql server
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+
 - name: Set and enable password
   block:
     - name: Set password for super user
