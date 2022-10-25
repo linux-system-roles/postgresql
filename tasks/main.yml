@@ -81,7 +81,7 @@
         backup: yes
       notify: restart postgresql
   when:
-    - postgresql_password is defined
+    - postgresql_password is not none
 
 - name: Run provided SQL script
   include_tasks: input_sql_file.yml
@@ -124,6 +124,7 @@
     regexp: '(shared_buffers\s=\s)([0-9]+)(\w\w)'
     replace: '\1 {{ (ansible_memory_mb.real.total/4)|int|abs  }}MB'
   when: postgresql_server_tuning
+  notify: restart postgresql
 
 - name: Set up recommended cache_size
   replace:
@@ -131,6 +132,7 @@
     regexp: '#(effective_cache_size\s=\s)[0-9]+\w\w'
     replace: '\1 {{ (ansible_memory_mb.real.total/2)|int|abs  }}MB'
   when: postgresql_server_tuning
+  notify: restart postgresql
 
 - name: Configure pg_hba.conf
   become: yes
