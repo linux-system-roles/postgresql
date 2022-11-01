@@ -4,7 +4,7 @@
 # This file also serves as a documentation for such a variables.
 
 # Examples of role input variables:
-postgresql_version: 13
+postgresql_version: "13"
 postgresql_password: null
 postgresql_cert_name: server
 postgresql_server_tuning: true

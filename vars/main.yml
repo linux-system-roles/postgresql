@@ -14,3 +14,4 @@ __postgresql_required_facts:
   - distribution_major_version
   - distribution_version
   - os_family
+  - ansible_memory_mb
