@@ -2,6 +2,60 @@
 ---
 - name: Ensure that the role runs with default parameters
   hosts: all
-  gather_facts: false  # test that role works in this case
-  roles:
-    - linux-system-roles.template
+  gather_facts: false
+
+  tasks:
+    - name: Test default settings
+      block:
+        - name: Run postgresql role
+          include_role:
+            name: linux-system-roles.postgresql
+
+        - meta: flush_handlers
+
+        - name: test - postgresql-server running
+          command: systemctl is-active postgresql
+          changed_when: false
+
+        - name: test - postgresql-server is enabled
+          command: systemctl is-enabled postgresql
+          changed_when: false
+
+        - name: test - database is accesible for super user usign Unix socket
+          become: yes
+          become_user: postgres
+          shell: |
+            set -euo pipefail
+            echo '\q' | psql
+          async: 3             # in case of password promt we need to fail
+          changed_when: false
+
+        - name: check - server tunning is used - shared buffers
+          become: yes
+          become_user: postgres
+          shell: |
+            set -euo pipefail
+            echo "SHOW shared_buffers;" | psql
+          register: result
+          changed_when: false
+
+        - name: test - server tunning is used - shared buffers
+          assert:
+            that: >
+             (ansible_memory_mb.real.total/4) | int | abs | string
+              in result.stdout
+
+        - name: check - server tunning is used - effective cache size
+          become: yes
+          become_user: postgres
+          shell: |
+            set -euo pipefail
+            echo "SHOW effective_cache_size;" | psql
+          register: result
+          changed_when: false
+
+        - name: test - server tunning is used - effective cache size
+          assert:
+            that: >
+              (ansible_memory_mb.real.total/2) | int | abs | string
+               in result.stdout
