@@ -53,7 +53,8 @@ galaxy_info:
         - all
     - name: EL
       versions:
-        - all
+        - 8
+        - 9
 
   galaxy_tags: []
   # List tags for your role here, one per line. A tag is a keyword that
