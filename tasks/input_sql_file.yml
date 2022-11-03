@@ -20,7 +20,7 @@
         owner: postgres
         group: postgres
         mode: '0600'
-        changed_when: false
+      changed_when: false
 
 - name: Input {{ postgresql_input_file }} to PostgreSQL
   block:
