@@ -1,0 +1,45 @@
+---
+- name: Test Postgresql server with ssl support using certificate role
+  hosts: all
+
+  tasks:
+    - name: Create certificate for Postgresql
+      include_role:
+        name: linux-system-roles.certificate
+      vars:
+        certificate_requests:
+          - name: server
+            dns: www.example.com
+            ca: self-sign
+
+    - name: Test Postgresql server with certificate
+      block:
+        - name: Deploy postgresql
+          include_role:
+            name: linux-system-roles.postgresql
+
+        - meta: flush_handlers
+
+        - name: Gather output of psql
+          environment:
+            PGPASSWORD: "{{ postgresql_password }}"
+          shell: |
+            set -euo pipefail
+            echo "\conninfo" | psql -U postgres -h 127.0.0.1
+          register: result
+          changed_when: false
+
+        - name: Check output of psql
+          assert:
+            that: >
+              "SSL connection" in result.stdout
+
+      vars:
+        postgresql_password: redhat
+        postgresql_pg_hba_conf:
+          - type: hostssl
+            database: all
+            user: all
+            auth_method: md5
+            address: '127.0.0.1/32'
+        postgresql_ssl_enable: yes
