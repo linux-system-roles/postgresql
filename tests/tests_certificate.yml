@@ -5,7 +5,7 @@
   tasks:
     - name: Create certificate for Postgresql
       include_role:
-        name: linux-system-roles.certificate
+        name: fedora.linux_system_roles.certificate
       vars:
         certificate_requests:
           - name: server
