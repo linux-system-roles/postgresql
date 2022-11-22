@@ -1,0 +1,7 @@
+---
+- name: Generate certificates
+  include_role:
+    name: fedora.linux_system_roles.certificate
+  vars:
+    certificate_requests: "{{ postgresql_certificates }}"
+  when: postgresql_certificates | length > 0

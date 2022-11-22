@@ -87,6 +87,9 @@
   include_tasks: input_sql_file.yml
   when: postgresql_input_file is defined
 
+- name: Generate certificates
+  include_tasks: certificate.yml
+
 - name: Install TLS certificates for postgresql
   file:
     src: "{{ postgresql_cert_path }}/{{ postgresql_cert_name }}.crt"
