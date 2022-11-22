@@ -18,5 +18,4 @@ postgresql_ssl_enable: false
 #   - name: postgresql_cert
 #     dns: ['localhost', 'www.example.com']
 #     ca: self-sign
-postgresql_certificate: []
-
+postgresql_certificates: []
