@@ -74,11 +74,11 @@ postgresql_cert_path: "/etc/pki/tls/certs"
 ```
 ### postgresql_certificates
 This is a `list` of `dict` in the same format as used
-  by the `fedora.linux_system_roles.certificate` role.  Specify this variable if
-  you want the certificate role to generate the certificates for the logging system
-  configured by the logging role. With this example, `self-signed` certificate
-  `logging_cert.crt` is generated in `/etc/pki/tls/certs`.
-  Default to `[]`.
+by the `fedora.linux_system_roles.certificate` role.  Specify this variable if
+you want the certificate role to generate the certificates for the PostgreSQL server
+configured by the PostgreSQL role. With this example, `self-signed` certificate
+`postgresql_cert.crt` is generated in `/etc/pki/tls/certs`.
+Default to `[]`.
 ```yaml
 postgresql_certificates:
   - name: postgresql_cert

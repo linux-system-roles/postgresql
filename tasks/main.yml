@@ -87,28 +87,8 @@
   include_tasks: input_sql_file.yml
   when: postgresql_input_file is defined
 
-- name: Generate certificates
+- name: Generate certificates and install cerificates
   include_tasks: certificate.yml
-
-- name: Install TLS certificates for postgresql
-  file:
-    src: "{{ postgresql_cert_path }}/{{ postgresql_cert_name }}.crt"
-    dest: /var/lib/pgsql/data/{{ postgresql_cert_name }}.crt
-    state: link
-    owner: postgres
-  when:
-    - __postgresql_cert.stat.exists
-    - __postgresql_key.stat.exists
-
-- name: Install postgresql server private key
-  file:
-    src: "{{ postgresql_key_path }}/{{ postgresql_cert_name }}.key"
-    dest: /var/lib/pgsql/data/{{ postgresql_cert_name }}.key
-    state: link
-    owner: postgres
-  when:
-    - __postgresql_cert.stat.exists
-    - __postgresql_key.stat.exists
 
 - name: Enable SSL
   replace:
