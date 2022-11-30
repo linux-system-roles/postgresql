@@ -8,6 +8,12 @@ postgresql_version: "13"
 postgresql_password: null
 postgresql_cert_name: server
 postgresql_server_tuning: true
-postgresql_key_path: /etc/pki/tls/private
-postgresql_cert_path: /etc/pki/tls/certs
 postgresql_ssl_enable: false
+
+# If you want to generate the certificas in the postgresql role
+# specify the configuration like this example
+# postgresql_certificates:
+#   - name: postgresql_cert
+#     dns: ['localhost', 'www.example.com']
+#     ca: self-sign
+postgresql_certificates: []

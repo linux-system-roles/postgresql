@@ -29,10 +29,10 @@
 
 - name: Check TLS crt file
   stat:
-    path: "{{ postgresql_cert_path }}/{{ postgresql_cert_name }}.crt"
+    path: "{{ postgresql_cert_name }}.crt"
   register: __postgresql_cert
 
 - name: Check TLS private key file
   stat:
-    path: "{{ postgresql_key_path }}/{{ postgresql_cert_name }}.key"
+    path: "{{ postgresql_cert_name }}.key"
   register: __postgresql_key
