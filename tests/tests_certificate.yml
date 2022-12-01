@@ -1,22 +1,19 @@
 ---
-- name: Test Postgresql server with ssl support using certificate role
+- name: Test PostgreSQL server with ssl support using certificate role
   hosts: all
 
   tasks:
-    - name: Create certificate for Postgresql
-      include_role:
-        name: fedora.linux_system_roles.certificate
-      vars:
-        certificate_requests:
-          - name: server
-            dns: www.example.com
-            ca: self-sign
-
-    - name: Test Postgresql server with certificate
+    - name: Test PostgreSQL server with certificate in non default path
       block:
         - name: Deploy postgresql
           include_role:
             name: linux-system-roles.postgresql
+          vars:
+            postgresql_certificates:
+              - name: /tmp/tmp_cert
+                dns: www.example.com
+                ca: self-sign
+            postgresql_ssl_enable: yes
 
         - meta: flush_handlers
 
@@ -43,3 +40,94 @@
             auth_method: md5
             address: '127.0.0.1/32'
         postgresql_ssl_enable: yes
+      always:
+        - name: Clean up
+          include_tasks: clean_instance.yml
+
+    - name: Test PostgreSQL server with certificate in default path
+      block:
+        - name: Deploy postgresql
+          include_role:
+            name: linux-system-roles.postgresql
+          vars:
+            postgresql_certificates:
+              - name: test_crt
+                dns: www.example.com
+                ca: self-sign
+            postgresql_ssl_enable: yes
+
+        - meta: flush_handlers
+
+        - name: Gather output of psql
+          environment:
+            PGPASSWORD: "{{ postgresql_password }}"
+          shell: |
+            set -euo pipefail
+            echo "\conninfo" | psql -U postgres -h 127.0.0.1
+          register: result
+          changed_when: false
+
+        - name: Check output of psql
+          assert:
+            that: >
+              "SSL connection" in result.stdout
+
+      vars:
+        postgresql_password: redhat
+        postgresql_pg_hba_conf:
+          - type: hostssl
+            database: all
+            user: all
+            auth_method: md5
+            address: '127.0.0.1/32'
+        postgresql_ssl_enable: yes
+
+      always:
+        - name: Clean up
+          include_tasks: clean_instance.yml
+
+    - name: Test using own certificate with path specificated in variable
+      vars:
+        postgresql_password: redhat
+      block:
+        - name: Generate own certificate
+          include_role:
+            name: fedora.linux_system_roles.certificate
+          vars:
+            certificate_requests:
+              - name: /tmp/test_cert
+                dns: www.example.com
+                ca: self-sign
+
+        - name: Set up database server
+          include_role:
+            name: linux-system-roles.postgresql
+          vars:
+            postgresql_cert_name: "/tmp/test_cert"
+            postgresql_pg_hba_conf:
+              - type: hostssl
+                database: all
+                user: all
+                auth_method: md5
+                address: '127.0.0.1/32'
+            postgresql_ssl_enable: yes
+
+        - meta: flush_handlers
+
+        - name: Gather output of psql
+          environment:
+            PGPASSWORD: "{{ postgresql_password }}"
+          shell: |
+            set -euo pipefail
+            echo "\conninfo" | psql -U postgres -h 127.0.0.1
+          register: result
+          changed_when: false
+
+        - name: Check output of psql
+          assert:
+            that: >
+              "SSL connection" in result.stdout
+
+      always:
+        - name: Clean up
+          include_tasks: clean_instance.yml
