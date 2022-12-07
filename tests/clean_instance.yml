@@ -13,3 +13,7 @@
   file:
     path: /var/lib/pgsql/data
     state: absent
+
+- name: Dump logs
+  command: journalctl -u postgresql
+  changed_when: false
