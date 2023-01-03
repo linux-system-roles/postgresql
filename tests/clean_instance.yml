@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Uninstall postgresql
+  become: true
+  become_user: root
+  package:
+    name: postgresql
+    state: absent
+
+- name: remove /var/lib/data directory
+  become: true
+  become_user: root
+  file:
+    path: /var/lib/pgsql/data
+    state: absent
+
+- name: Dump logs
+  command: journalctl -u postgresql
+  changed_when: false

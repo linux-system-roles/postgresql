@@ -96,9 +96,7 @@
     regexp: '#(ssl\s=\s).*$'
     replace: '\1on'
   when:
-    - __postgresql_cert.stat.exists
-    - __postgresql_key.stat.exists
-    - postgresql_ssl_enable is defined
+    - postgresql_ssl_enable
   notify: restart postgresql
 
 - name: Set up recommanded shared_buffers size

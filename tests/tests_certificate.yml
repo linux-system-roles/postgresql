@@ -1,0 +1,48 @@
+---
+- name: Test PostgreSQL server with ssl support using certificate role
+  hosts: all
+  tasks:
+    - name: Test PostgreSQL server with certificate in default path
+      block:
+        - name: Deploy postgresql
+          include_role:
+            name: linux-system-roles.postgresql
+          vars:
+            postgresql_certificates:
+              - name: test_crt
+                dns: www.example.com
+                ca: self-sign
+            postgresql_ssl_enable: yes
+            postgresql_pg_hba_conf:
+              - type: hostssl
+                database: all
+                user: all
+                auth_method: md5
+                address: '127.0.0.1/32'
+
+        - meta: flush_handlers
+
+        - name: Gather output of psql
+          environment:
+            PGPASSWORD: "{{ postgresql_password }}"
+          shell: |
+            set -euo pipefail
+            echo "\conninfo" | psql -U postgres -h 127.0.0.1
+          register: result
+          changed_when: false
+
+        - name: Check output of psql
+          assert:
+            that: >
+              "SSL connection" in result.stdout
+
+      vars:
+        postgresql_password: redhat
+
+      always:
+        - name: Stop tracking certificate
+          command: getcert stop-tracking -f /etc/pki/tls/certs/test_crt.crt
+          changed_when: false
+
+        - name: Clean up
+          include_tasks: clean_instance.yml
