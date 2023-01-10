@@ -11,18 +11,21 @@
           include_role:
             name: linux-system-roles.postgresql
 
-        - meta: flush_handlers
+        - name: Flush handlers
+          meta: flush_handlers
 
-        - name: test - postgresql-server running
+        - name: Test - postgresql-server running
+          # noqa command-instead-of-module
           command: systemctl is-active postgresql
           changed_when: false
 
-        - name: test - postgresql-server is enabled
+        - name: Test - postgresql-server is enabled
+          # noqa command-instead-of-module
           command: systemctl is-enabled postgresql
           changed_when: false
 
-        - name: test - database is accesible for super user usign Unix socket
-          become: yes
+        - name: Test - database is accesible for super user usign Unix socket
+          become: true
           become_user: postgres
           shell: |
             set -euo pipefail
@@ -30,8 +33,8 @@
           async: 3             # in case of password promt we need to fail
           changed_when: false
 
-        - name: check - server tunning is used - shared buffers
-          become: yes
+        - name: Check - server tunning is used - shared buffers
+          become: true
           become_user: postgres
           shell: |
             set -euo pipefail
@@ -39,14 +42,14 @@
           register: result
           changed_when: false
 
-        - name: test - server tunning is used - shared buffers
+        - name: Test - server tunning is used - shared buffers
           assert:
             that: >
              (ansible_memory_mb.real.total/4) | int | abs | string
               in result.stdout
 
-        - name: check - server tunning is used - effective cache size
-          become: yes
+        - name: Check - server tunning is used - effective cache size
+          become: true
           become_user: postgres
           shell: |
             set -euo pipefail
@@ -54,7 +57,7 @@
           register: result
           changed_when: false
 
-        - name: test - server tunning is used - effective cache size
+        - name: Test - server tunning is used - effective cache size
           assert:
             that: >
               (ansible_memory_mb.real.total/2) | int | abs | string

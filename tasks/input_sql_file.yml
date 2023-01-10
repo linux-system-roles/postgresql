@@ -1,3 +1,4 @@
+---
 - name: Verify if postgresql_password is set
   assert:
     that: postgresql_password is defined
@@ -13,7 +14,7 @@
       register: __postgresql_sql_tempfile
       changed_when: false
 
-    - name: Copy the {{ postgresql_input_file }} file to the host
+    - name: Copy the sql input file to the host {{ postgresql_input_file }}
       copy:
         src: "{{ postgresql_input_file }}"
         dest: "{{ __postgresql_sql_tempfile.path }}"
@@ -22,11 +23,10 @@
         mode: '0600'
       changed_when: false
 
-- name: Input {{ postgresql_input_file }} to PostgreSQL
+- name: Input sql file to PostgreSQL {{ postgresql_input_file }}
   block:
-
     - name: Run SQL script
-      become: yes
+      become: true
       become_user: postgres
       environment:
         PGPASSWORD: "{{ postgresql_password }}"
@@ -39,7 +39,7 @@
       debug:
         msg: "{{ __postgresql_output }}"
 
-- name: Remove sql script {{ postgresql_input_file }} from the host
+- name: Remove sql script from the host {{ postgresql_input_file }}
   file:
     state: absent
     path: /tmp/input.sql

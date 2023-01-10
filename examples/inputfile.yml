@@ -3,6 +3,5 @@
   hosts: localhost
   vars:
     postgresql_input_file: "examples/simple.sql"
-
   roles:
     - linux-system-roles.postgresql

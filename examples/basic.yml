@@ -1,6 +1,7 @@
 ---
-- hosts: localhost
+- name: Run role with minimal parameters
+  hosts: localhost
   vars:
     postgresql_version: "10"
   roles:
-    name: linux-system-roles.postgresql
+    - linux-system-roles.postgresql

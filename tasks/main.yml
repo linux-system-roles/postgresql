@@ -6,8 +6,7 @@
   include_tasks: tasks/set_vars.yml
 
 - name: Gather the package facts
-  ansible.builtin.package_facts:
-    manager: auto
+  package_facts:
 
 - name: Check if requested version is supported in the system (RHEL8)
   fail:
@@ -15,7 +14,7 @@
   when:
     - ansible_facts["os_family"] == "RedHat"
     - ansible_facts["distribution_major_version"] == "8"
-    - postgresql_version | string  not in __postgresql_versions_el8
+    - postgresql_version | string not in __postgresql_versions_el8
 
 - name: Check if requested version is supported in system (RHEL9)
   fail:
@@ -33,7 +32,7 @@
   when:
     - "'postgresql' in ansible_facts.packages"
     - ansible_facts.packages["postgresql"][0].version |
-      regex_search('([0-9]*).', '\\1') | first !=  postgresql_version | string
+      regex_search('([0-9]*).', '\\1') | first != postgresql_version | string
 
 - name: Ensure required packages are installed
   package:
@@ -41,6 +40,7 @@
     state: present
 
 - name: Init DB
+  when: not __postgresql_conf.stat.exists
   block:
     - name: Init DB
       command:
@@ -51,19 +51,19 @@
       service:
         name: postgresql
         state: started
-        enabled: yes
-  when: not __postgresql_conf.stat.exists
+        enabled: true
 
 - name: Enable and start existing instance of postgresql server
   service:
     name: postgresql
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Set and enable password
+  when: postgresql_password is not none
   block:
     - name: Set password for super user
-      become: yes
+      become: true
       become_user: postgres
       environment:
         PGPASSWORD: "{{ postgresql_password }}"
@@ -72,22 +72,21 @@
           psql -c "ALTER USER postgres WITH ENCRYPTED PASSWORD
           '{{ postgresql_password }}';"
       no_log: true
+      changed_when: false
 
     - name: Enable logging in by password
       replace:
         path: /var/lib/pgsql/data/pg_hba.conf
         regexp: '(peer|ident)$'
         replace: 'md5'
-        backup: yes
-      notify: restart postgresql
-  when:
-    - postgresql_password is not none
+        backup: true
+      notify: Restart postgresql
 
 - name: Run provided SQL script
   include_tasks: input_sql_file.yml
   when: postgresql_input_file is defined
 
-- name: Generate certificates and install cerificates
+- name: Manage certificates
   include_tasks: certificate.yml
 
 - name: Enable SSL
@@ -97,37 +96,38 @@
     replace: '\1on'
   when:
     - postgresql_ssl_enable
-  notify: restart postgresql
+  notify: Restart postgresql
 
 - name: Set up recommanded shared_buffers size
   replace:
     path: "/var/lib/pgsql/data/postgresql.conf"
     regexp: '(shared_buffers\s=\s)([0-9]+)(\w\w)'
-    replace: '\1 {{ (ansible_memory_mb.real.total/4)|int|abs  }}MB'
+    replace: '\1 {{ (ansible_memory_mb.real.total / 4) | int | abs }}MB'
   when: postgresql_server_tuning
-  notify: restart postgresql
+  notify: Restart postgresql
 
 - name: Set up recommended cache_size
   replace:
     path: "/var/lib/pgsql/data/postgresql.conf"
     regexp: '#(effective_cache_size\s=\s)[0-9]+\w\w'
-    replace: '\1 {{ (ansible_memory_mb.real.total/2)|int|abs  }}MB'
+    replace: '\1 {{ (ansible_memory_mb.real.total / 2) | int | abs }}MB'
   when: postgresql_server_tuning
-  notify: restart postgresql
+  notify: Restart postgresql
 
 - name: Configure pg_hba.conf
-  become: yes
+  become: true
   template:
-    backup: yes
+    backup: true
     dest: "/var/lib/pgsql/data/pg_hba.conf"
     src: pg_hba.conf.j2
     mode: 0600
     owner: postgres
     group: postgres
   when: postgresql_pg_hba_conf is defined
-  notify: restart postgresql
+  notify: Restart postgresql
 
 - name: Generate postgresql system-roles.conf
+  when: postgresql_server_conf is defined
   block:
     - name: Create postgresql directory in /etc
       file:
@@ -136,9 +136,9 @@
         mode: '0755'
 
     - name: Generate postgresql system-roles.conf
-      become: yes
+      become: true
       template:
-        backup: yes
+        backup: true
         dest: "/etc/postgresql/system-roles.conf"
         src: postgresql.conf.j2
         mode: 0600
@@ -149,5 +149,4 @@
       lineinfile:
         path: /var/lib/pgsql/data/postgresql.conf
         line: "include_if_exists = '/etc/postgresql/system-roles.conf'"
-      notify: restart postgresql
-  when: postgresql_server_conf is defined
+      notify: Restart postgresql

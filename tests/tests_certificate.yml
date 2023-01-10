@@ -3,6 +3,8 @@
   hosts: all
   tasks:
     - name: Test PostgreSQL server with certificate in default path
+      vars:
+        postgresql_password: redhat
       block:
         - name: Deploy postgresql
           include_role:
@@ -12,7 +14,7 @@
               - name: test_crt
                 dns: www.example.com
                 ca: self-sign
-            postgresql_ssl_enable: yes
+            postgresql_ssl_enable: true
             postgresql_pg_hba_conf:
               - type: hostssl
                 database: all
@@ -20,7 +22,8 @@
                 auth_method: md5
                 address: '127.0.0.1/32'
 
-        - meta: flush_handlers
+        - name: Flush handlers
+          meta: flush_handlers
 
         - name: Gather output of psql
           environment:
@@ -35,10 +38,6 @@
           assert:
             that: >
               "SSL connection" in result.stdout
-
-      vars:
-        postgresql_password: redhat
-
       always:
         - name: Stop tracking certificate
           command: getcert stop-tracking -f /etc/pki/tls/certs/test_crt.crt

@@ -11,8 +11,8 @@
     - name: Install certificate from the default path
       file:
         src: >-
-          /etc/pki/tls/certs/{{ ( postgresql_certificates |
-          first )['name'] }}.crt
+          /etc/pki/tls/certs/{{ (postgresql_certificates |
+          first)['name'] }}.crt
         dest: /var/lib/pgsql/data/server.crt
         state: link
         owner: postgres
@@ -21,8 +21,8 @@
     - name: Install certificate from the default path
       file:
         src: >-
-          /etc/pki/tls/private/{{ ( postgresql_certificates |
-          first )['name'] }}.key
+          /etc/pki/tls/private/{{ (postgresql_certificates |
+          first)['name'] }}.key
         dest: /var/lib/pgsql/data/server.key
         state: link
         owner: postgres
@@ -30,7 +30,7 @@
 
     - name: Install certificate from custom path
       file:
-        src: "{{ ( postgresql_certificates | first )['name'] }}.crt"
+        src: "{{ (postgresql_certificates | first)['name'] }}.crt"
         dest: /var/lib/pgsql/data/server.crt
         state: link
         owner: postgres
@@ -38,7 +38,7 @@
 
     - name: Install certificate from custom path
       file:
-        src: "{{ ( postgresql_certificates | first )['name'] }}.key"
+        src: "{{ (postgresql_certificates | first)['name'] }}.key"
         dest: /var/lib/pgsql/data/server.key
         state: link
         owner: postgres
