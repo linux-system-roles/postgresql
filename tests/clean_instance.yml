@@ -7,7 +7,7 @@
     name: postgresql
     state: absent
 
-- name: remove /var/lib/data directory
+- name: Remove /var/lib/data directory
   become: true
   become_user: root
   file:
