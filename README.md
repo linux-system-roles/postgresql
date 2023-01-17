@@ -56,21 +56,12 @@ To set up ssl connection it's necessary to set up `postgresql_ssl_enable` variab
 postgresql_ssl_enable: true
 ```
 ### postgresql_cert_name
+In case you want to use own key and certificate. Use `postgresql_cert_name` variable. It's necessary to have both files in the same directory and with the same name with suffixes .crt and .key
+
 To specify certificate name use `postgresql_cert_name` variable.
-You can copy your certificate to `/etc/pki/tls/certs/server.crt` and key to `/etc/pki/tls/private/server.key` or
-you can also use certificate system role. For more detail see [`examples/`](examples).
+For example your crt file is located in `/etc/certs/server.crt` and key in `/etc/certs/server.key`. So `postgresql_cert_name` value should be
 ```yaml
-postgresql_cert_name: server
-```
-### postgresql_key_path
-Optionaly you can specify path to server key using `postgresql_key_path` variable. The default value is
-```yaml
-postgresql_key_path: /etc/pki/tls/private
-```
-### postgresql_cert_path
-Optionaly you can specify path to server cert using `postgresql_cert_path` variable. The default value is
-```ymal
-postgresql_cert_path: "/etc/pki/tls/certs"
+postgresql_cert_name: /etc/certs/server
 ```
 ### postgresql_certificates
 This is a `list` of `dict` in the same format as used

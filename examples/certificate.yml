@@ -10,10 +10,9 @@
         auth_method: md5
         address: '127.0.0.1/32'
     postgresql_ssl_enable: true
-    certificate_requests:
+    postgresql_certificates:
       - name: server
         dns: www.example.com
         ca: self-sign
   roles:
-    - linux-system-roles.certificate
     - linux-system-roles.postgresql
