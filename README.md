@@ -91,6 +91,21 @@ postgresql_server_tuning: false
 
 More about usage could be found in [`examples/`](examples) directory
 
+## Idempotention
+This section should cover role behavior for repeated runs.
+### Password change
+Once the password is set using `postgresql_password` variable it isn`t possible to
+change it by setting other value. Also for every database acces using superuser must
+be used `postgresql_password`. Including functionality of `postgresql_input_file`
+### Config file redefinition
+Config files generated from `postgresql_pg_hba_conf` and `postgresql_conf` are 
+regenerated within each single run. So every change rewrite the
+previous configuration.
+### Version change
+Once the postgresql server is installed it isn't possible upgrade the server by
+increasing version number in `postgresql_version` also downgrade is not allowed.
+### Server tunning
+### SSL usage
 
 ## Example Playbook
 
