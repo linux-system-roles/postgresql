@@ -89,31 +89,6 @@
 - name: Manage certificates
   include_tasks: certificate.yml
 
-- name: Enable SSL
-  replace:
-    path: /var/lib/pgsql/data/postgresql.conf
-    regexp: '#(ssl\s=\s).*$'
-    replace: '\1on'
-  when:
-    - postgresql_ssl_enable
-  notify: Restart postgresql
-
-- name: Set up recommanded shared_buffers size
-  replace:
-    path: "/var/lib/pgsql/data/postgresql.conf"
-    regexp: '(shared_buffers\s=\s)([0-9]+)(\w\w)'
-    replace: '\1 {{ (ansible_memory_mb.real.total / 4) | int | abs }}MB'
-  when: postgresql_server_tuning
-  notify: Restart postgresql
-
-- name: Set up recommended cache_size
-  replace:
-    path: "/var/lib/pgsql/data/postgresql.conf"
-    regexp: '#(effective_cache_size\s=\s)[0-9]+\w\w'
-    replace: '\1 {{ (ansible_memory_mb.real.total / 2) | int | abs }}MB'
-  when: postgresql_server_tuning
-  notify: Restart postgresql
-
 - name: Configure pg_hba.conf
   become: true
   template:
@@ -126,15 +101,32 @@
   when: postgresql_pg_hba_conf is defined
   notify: Restart postgresql
 
+- name: Create postgresql directory in /etc
+  file:
+    path: /etc/postgresql
+    state: directory
+    mode: 0755
+
+- name: Link generated conf file with server one
+  lineinfile:
+    path: /var/lib/pgsql/data/postgresql.conf
+    line: "include_if_exists = '/etc/postgresql/system-roles-internal.conf'"
+    insertafter: "EOF"
+  notify: Restart postgresql
+
+- name: Generate postgresql system-roles-internal.conf
+  become: true
+  template:
+    backup: true
+    dest: "/etc/postgresql/system-roles-internal.conf"
+    src: postgresql-internal.conf.j2
+    mode: 0600
+    owner: postgres
+    group: postgres
+
 - name: Generate postgresql system-roles.conf
   when: postgresql_server_conf is defined
   block:
-    - name: Create postgresql directory in /etc
-      file:
-        path: /etc/postgresql
-        state: directory
-        mode: '0755'
-
     - name: Generate postgresql system-roles.conf
       become: true
       template:
