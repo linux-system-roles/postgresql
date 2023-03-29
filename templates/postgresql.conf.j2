@@ -1,4 +1,5 @@
 {{ ansible_managed | comment }}
+{{ "system_role:postgresql" | comment(prefix="", postfix="") }}
 
 {% for key, value in postgresql_server_conf.items() %}
 {{ key }} = {{ value }}
