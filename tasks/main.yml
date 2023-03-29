@@ -105,17 +105,7 @@
   file:
     path: /etc/postgresql
     state: directory
-    mode: '0755'
-
-- name: Prepare internal file for configuration
-  copy:
-    content: ""
-    dest: "/etc/postgresql/system-roles-internal.conf"
-    force: false
-    mode: 0600
-    owner: postgres
-    group: postgres
-  notify: Restart postgresql
+    mode: 0755
 
 - name: Link generated conf file with server one
   lineinfile:
@@ -124,51 +114,15 @@
     insertafter: "EOF"
   notify: Restart postgresql
 
-- name: Enable ssl in /etc/postgresql/system-roles-internal.conf
-  lineinfile:
-    path: /etc/postgresql/system-roles-internal.conf
-    line: "ssl = on"
-  when: postgresql_ssl_enable
-
-- name: Disable ssl in /etc/postgresql/system-roles-internal.conf
-  lineinfile:
-    path: /etc/postgresql/system-roles-internal.conf
-    state: absent
-    regex: 'ssl'
-  when: not postgresql_ssl_enable
-  notify: Restart postgresql
-
-- name: Set up recommanded shared_buffers size
-  lineinfile:
-    path: /etc/postgresql/system-roles-internal.conf
-    line: 'shared_buffers = {{ (ansible_memory_mb.real.total / 4) |
-      int | abs }}MB'
-  when: postgresql_server_tuning
-  notify: Restart postgresql
-
-- name: Disable recommanded shared_buffers size
-  lineinfile:
-    path: /etc/postgresql/system-roles-internal.conf
-    state: absent
-    regex: 'shared_buffers'
-  when: not postgresql_server_tuning
-  notify: Restart postgresql
-
-- name: Set up recommended cache_size
-  lineinfile:
-    path: /etc/postgresql/system-roles-internal.conf
-    line: 'effective_cache_size = {{ (ansible_memory_mb.real.total / 2) |
-      int | abs }}MB'
-  when: postgresql_server_tuning
-  notify: Restart postgresql
-
-- name: Disable recommended cache_size
-  lineinfile:
-    path: /etc/postgresql/system-roles-internal.conf
-    state: absent
-    regex: 'effective_cache_size'
-  when: not postgresql_server_tuning
-  notify: Restart postgresql
+- name: Generate postgresql system-roles-internal.conf
+  become: true
+  template:
+    backup: true
+    dest: "/etc/postgresql/system-roles-internal.conf"
+    src: postgresql-internal.conf.j2
+    mode: 0600
+    owner: postgres
+    group: postgres
 
 - name: Generate postgresql system-roles.conf
   when: postgresql_server_conf is defined

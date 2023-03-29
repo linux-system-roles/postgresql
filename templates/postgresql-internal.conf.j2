@@ -1,0 +1,9 @@
+{{ ansible_managed | comment }}
+
+{% if postgresql_server_tuning %}
+shared_buffers = {{ (ansible_memory_mb.real.total / 4) | int | abs }}MB
+effective_cache_size = {{ (ansible_memory_mb.real.total / 2) | int | abs }}MB
+{% endif %}
+{% if postgresql_ssl_enable %}
+ssl = on
+{% endif %}
