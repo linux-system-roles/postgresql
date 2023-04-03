@@ -107,8 +107,10 @@ previous configuration.
 Once the postgresql server is installed it isn't possible upgrade the server by
 increasing version number in `postgresql_version` also downgrade is not allowed.
 ### Server tunning
+This option reflects the setup of the latest run of the role.
 ### SSL usage
-
+This option reflects the setup of the latest run of the role. Postgresql server needs
+properly defined certificates and keys for running with enabled SSL/TLS.
 ## Example Playbook
 
 
