@@ -1,22 +1,23 @@
 # PostgreSQL system role
 ![CI Testing](https://github.com/linux-system-roles/postgresql/workflows/tox/badge.svg)
 
-The PostgreSQL system installs, configures, and starts the PostgreSQL server.
+The PostgreSQL system role installs, configures, and starts the PostgreSQL 
+server.
 
 The role also optimizes the database server settings to improve performance.
 
-The role currently works with PostgreSQL server 10 12 and 13.
+The role currently works with the PostgreSQL server 10, 12, and 13.
 ## Role Variables
 ### postgresql_verison
-You can set the version of PostgreSQL server to 10, 12, or 13.
+You can set the version of the PostgreSQL server to 10, 12, or 13.
 ```yaml
 postgresql_version: "13"
 ```
 ### postgresql_password
 Optionally, you can set a password for the `postgres` database superuser.
-By default, no password is set, and a datababase is accessible from
-the `postgres` system account through a UNIX socket.
-It is recommended to encrypt the password using Ansible Vault.
+By default, no password is set, and a datababase is accessible from the 
+`postgres` system account through a UNIX socket. It is recommended to encrypt 
+the password by using Ansible Vault.
 ```yaml
 postgresql_password: !vault |
           $ANSIBLE_VAULT;1.2;AES256;dev
@@ -43,9 +44,9 @@ postgresql_pg_hba_conf:
     auth_method: ident
 ```
 ### postgresql_server_conf
-The content of the `postgresql_server_conf` variable is
-added to the end of the `/var/lib/pgsql/data/postgresql.conf` file.
-As a result, the default settings are overwritten.
+The content of the `postgresql_server_conf` variable is added to the end of 
+the `/var/lib/pgsql/data/postgresql.conf` file. As a result, the default 
+settings are overwritten.
 ```yaml
 postgresql_server_conf:
   ssl: on
@@ -53,25 +54,31 @@ postgresql_server_conf:
   huge_pages: try
 ```
 ### postgresql_ssl_enable
-To set up a SSL/TLS connection, set the `postgresql_ssl_enable` variable to `True`  and provide a server certificate and a private key.
+To set up a SSL/TLS connection, set the `postgresql_ssl_enable` variable to 
+`True`  and provide a server certificate and a private key.
 ```yaml
 postgresql_ssl_enable: true
 ```
 ### postgresql_cert_name
-In case you want to use own key and certificate. Use `postgresql_cert_name` variable. It's necessary to have both files in the same directory and with the same name with suffixes .crt and .key
+If you want to use your own certificate and private key, use the 
+`postgresql_cert_name` variable to specify the certificate name. You must keep 
+both certificate and key files in the same directory and under the same name 
+with the `.crt` and `.key` suffixes.
 
-Use `postgresql_cert_name` variable to specify certificate name.
-For example your crt file is located in `/etc/certs/server.crt` and key in `/etc/certs/server.key`. So `postgresql_cert_name` value should be
+For example, if your certificate file is located in `/etc/certs/server.crt` and 
+your private key in `/etc/certs/server.key`, set the `postgresql_cert_name` 
+value to:
 ```yaml
 postgresql_cert_name: /etc/certs/server
 ```
 ### postgresql_certificates
-This is a `list` of `dict` in the same format as used
-by the `fedora.linux_system_roles.certificate` role.  Specify this variable if
-you want the certificate role to generate the certificates for the PostgreSQL server
-configured by the PostgreSQL role. With this example, `self-signed` certificate
-`postgresql_cert.crt` is generated in `/etc/pki/tls/certs`.
-Default to `[]`.
+The `postgresql_certificates` variable requires a `list` of `dict` in the same 
+format as used by the `fedora.linux_system_roles.certificate` role. Specify the 
+`postgresql_certificates` variable if you want the certificate role to generate 
+certificates for the PostgreSQL server configured by the PostgreSQL role. 
+In the following example, a `self-signed` certificate `postgresql_cert.crt` is 
+generated in the `/etc/pki/tls/certs/` directory. By default, no certificates 
+are automatically generated (`[]`).
 ```yaml
 postgresql_certificates:
   - name: postgresql_cert
@@ -79,38 +86,42 @@ postgresql_certificates:
     ca: self-sign
 ```
 ### postgresql_input_file
-To run an SQL script, define a path to your SQL file using the `postgresql_input_file` variable:
+To run an SQL script, define a path to your SQL file by using the 
+`postgresql_input_file` variable:
 ```yaml
 postgresql_input_file: "/tmp/mypath/file.sql"
 ```
 ### postgresql_server_tuning
 By default, the PostgreSQL system role enables server settings optimization
-based on system resources. To disabe the tuning,
-set the `postgresql_server_tuning` variable to `False`.
+based on system resources. To disabe the tuning, set the 
+`postgresql_server_tuning` variable to `False`.
 ```yaml
 postgresql_server_tuning: false
 ```
 
 See the [`examples/`](examples) for details.
 
-## Idempotention
+## Idempotence
 This section should cover role behavior for repeated runs.
 ### Password change
-Once the password is set using `postgresql_password` variable it isn't possible to
-change it by setting other value. Also for every database acces using superuser must
-be used `postgresql_password`. Including functionality of `postgresql_input_file`
+Once you set the password by using the `postgresql_password` variable, it is 
+impossible to change the password by setting another value. You must use the 
+`postgresql_password` variable for every database acces under the superuser, 
+including running an SQL script (the functionality of the 
+`postgresql_input_file` variable).
 ### Config file redefinition
-Config files generated from `postgresql_pg_hba_conf` and `postgresql_conf` are 
-regenerated within each single run. So every change rewrite the
+Configuration files generated from `postgresql_pg_hba_conf` and `postgresql_conf` 
+are regenerated within each single run. Therefore, every change rewrites the 
 previous configuration.
 ### Version change
-Once the postgresql server is installed it isn't possible upgrade the server by
-increasing version number in `postgresql_version` also downgrade is not allowed.
+Once the PostgreSQL server is installed, it is impossible to upgrade or 
+downgrade the server by increasing or decreasing the version number in the 
+`postgresql_version` variable.
 ### Server tunning
 This option reflects the setup of the latest run of the role.
 ### SSL usage
-This option reflects the setup of the latest run of the role. Postgresql server needs
-properly defined certificates and keys for running with enabled SSL/TLS.
+This option reflects the setup of the latest run of the role. The PostgreSQL 
+server needs properly defined certificates and keys to run with enabled SSL/TLS.
 ## Example Playbook
 
 
