@@ -54,8 +54,8 @@ postgresql_server_conf:
   huge_pages: try
 ```
 ### postgresql_ssl_enable
-To set up a SSL/TLS connection, set the `postgresql_ssl_enable` variable to 
-`True`  and provide a server certificate and a private key.
+To set up an SSL/TLS connection, set the `postgresql_ssl_enable` variable to 
+`true`  and provide a server certificate and a private key.
 ```yaml
 postgresql_ssl_enable: true
 ```
@@ -94,7 +94,7 @@ postgresql_input_file: "/tmp/mypath/file.sql"
 ### postgresql_server_tuning
 By default, the PostgreSQL system role enables server settings optimization
 based on system resources. To disabe the tuning, set the 
-`postgresql_server_tuning` variable to `False`.
+`postgresql_server_tuning` variable to `false`.
 ```yaml
 postgresql_server_tuning: false
 ```
