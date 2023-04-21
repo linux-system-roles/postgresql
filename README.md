@@ -50,7 +50,7 @@ settings are overwritten.
 ```yaml
 postgresql_server_conf:
   ssl: on
-  shared_buffers: 128 MB
+  shared_buffers: 128MB
   huge_pages: try
 ```
 ### postgresql_ssl_enable
