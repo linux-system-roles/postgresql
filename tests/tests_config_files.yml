@@ -1,48 +1,56 @@
 ---
 - name: Test PostgreSQL config file logic, handling
   hosts: all
-  vars:
-    __main_conf_file: /var/lib/pgsql/data/postgresql.conf
-    __generated_conf_files:
-      - /var/lib/pgsql/data/pg_hba.conf
-      - /etc/postgresql/system-roles.conf
-      - /etc/postgresql/system-roles-internal.conf
   tasks:
-    - name: Run role with given config
-      include_role:
-        name: linux-system-roles.postgresql
-      vars:
-        postgresql_pg_hba_conf:
-          - type: local
-            database: all
-            user: all
-            auth_method: peer
-          - type: host
-            database: all
-            user: all
-            address: '127.0.0.1/32'
-            auth_method: ident
-        postgresql_server_conf:
-          shared_buffers: 128MB
-          huge_pages: try
+    - name: Run test and cleanup
+      block:
+        - name: Run role with given config
+          include_role:
+            name: linux-system-roles.postgresql
+            public: true
+          vars:
+            postgresql_pg_hba_conf:
+              - type: local
+                database: all
+                user: all
+                auth_method: peer
+              - type: host
+                database: all
+                user: all
+                address: '127.0.0.1/32'
+                auth_method: ident
+            postgresql_server_conf:
+              shared_buffers: 128MB
+              huge_pages: try
 
-    - name: Verify existence of config files
-      stat:
-        path: "{{ item }}"
-      register: __stat
-      failed_when: not __stat.stat.exists
-      loop: "{{ __generated_conf_files }}"
+        - name: Verify existence of config files
+          stat:
+            path: "{{ item }}"
+          register: __stat
+          failed_when: not __stat.stat.exists
+          loop:
+            - "{{ __postgresql_hba_conf_file }}"
+            - "{{ __postgresql_conf_file }}"
+            - "{{ __postgresql_internal_conf_file }}"
 
-    - name: Verify main conf has link to system roles
-      command: >-
-        grep /etc/postgresql/system-roles-internal.conf
-        {{ __main_conf_file }}
-      changed_when: false
+        - name: Verify main conf has link to system roles
+          command: >-
+            grep {{ __postgresql_internal_conf_file }}
+            {{ __postgresql_main_conf_file }}
+          changed_when: false
 
-    - name: Check headers for ansible_managed, fingerprint
-      include_tasks: tasks/check_header.yml
-      loop: "{{ __generated_conf_files }}"
-      loop_control:
-        loop_var: __file
-      vars:
-        __fingerprint: "system_role:postgresql"
+        - name: Check headers for ansible_managed, fingerprint
+          include_tasks: tasks/check_header.yml
+          loop:
+            - "{{ __postgresql_hba_conf_file }}"
+            - "{{ __postgresql_conf_file }}"
+            - "{{ __postgresql_internal_conf_file }}"
+          loop_control:
+            loop_var: __file
+          vars:
+            __fingerprint: "system_role:postgresql"
+
+      always:
+        - name: Clean up
+          include_tasks: tasks/clean_instance.yml
+          tags: tests::cleanup

@@ -1,6 +1,9 @@
 ---
 - name: Generate certificate using PostgreSQL role
   when: postgresql_certificates | length > 0
+  vars:
+    __pg_server_crt: "{{ __postgresql_data_dir }}/server.crt"
+    __pg_server_key: "{{ __postgresql_data_dir }}/server.key"
   block:
     - name: Generate certificates
       include_role:
@@ -13,37 +16,36 @@
         src: >-
           /etc/pki/tls/certs/{{ (postgresql_certificates |
           first)['name'] }}.crt
-        dest: /var/lib/pgsql/data/server.crt
+        dest: "{{ __pg_server_crt }}"
         state: link
         owner: postgres
-      when: ( postgresql_certificates | first )['name'] is not abs
+      when: (postgresql_certificates | first)['name'] is not abs
 
     - name: Install certificate from the default path
       file:
         src: >-
           /etc/pki/tls/private/{{ (postgresql_certificates |
           first)['name'] }}.key
-        dest: /var/lib/pgsql/data/server.key
+        dest: "{{ __pg_server_key }}"
         state: link
         owner: postgres
-      when: ( postgresql_certificates | first )['name'] is not abs
+      when: (postgresql_certificates | first)['name'] is not abs
 
     - name: Install certificate from custom path
       file:
         src: "{{ (postgresql_certificates | first)['name'] }}.crt"
-        dest: /var/lib/pgsql/data/server.crt
+        dest: "{{ __pg_server_crt }}"
         state: link
         owner: postgres
-      when: ( postgresql_certificates | first )['name'] is abs
+      when: (postgresql_certificates | first)['name'] is abs
 
     - name: Install certificate from custom path
       file:
         src: "{{ (postgresql_certificates | first)['name'] }}.key"
-        dest: /var/lib/pgsql/data/server.key
+        dest: "{{ __pg_server_key }}"
         state: link
         owner: postgres
-      when: ( postgresql_certificates | first )['name'] is abs
-
+      when: (postgresql_certificates | first)['name'] is abs
 
 - name: Install user provided TLS certificates for postgresql
   when:
@@ -54,13 +56,13 @@
     - name: Install certificate file
       file:
         src: "{{ postgresql_cert_name }}.crt"
-        dest: /var/lib/pgsql/data/server.crt
+        dest: "{{ __pg_server_crt }}"
         state: link
         owner: postgres
 
     - name: Install postgresql server private key
       file:
         src: "{{ postgresql_cert_name }}.key"
-        dest: /var/lib/pgsql/data/server.key
+        dest: "{{ __pg_server_key }}"
         state: link
         owner: postgres

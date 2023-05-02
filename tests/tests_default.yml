@@ -10,6 +10,7 @@
         - name: Run postgresql role
           include_role:
             name: linux-system-roles.postgresql
+            public: true
 
         - name: Flush handlers
           meta: flush_handlers
@@ -24,16 +25,16 @@
           command: systemctl is-enabled postgresql
           changed_when: false
 
-        - name: Test - database is accesible for super user usign Unix socket
+        - name: Test - database is accessible for super user using Unix socket
           become: true
           become_user: postgres
           shell: |
             set -euo pipefail
             echo '\q' | psql
-          async: 3             # in case of password promt we need to fail
+          async: 3             # in case of password prompt we need to fail
           changed_when: false
 
-        - name: Check - server tunning is used - shared buffers
+        - name: Check - server tuning is used - shared buffers
           become: true
           become_user: postgres
           shell: |
@@ -42,13 +43,13 @@
           register: result
           changed_when: false
 
-        - name: Test - server tunning is used - shared buffers
+        - name: Test - server tuning is used - shared buffers
           assert:
             that: >
              (ansible_memory_mb.real.total/4) | int | abs | string
               in result.stdout
 
-        - name: Check - server tunning is used - effective cache size
+        - name: Check - server tuning is used - effective cache size
           become: true
           become_user: postgres
           shell: |
@@ -57,8 +58,13 @@
           register: result
           changed_when: false
 
-        - name: Test - server tunning is used - effective cache size
+        - name: Test - server tuning is used - effective cache size
           assert:
             that: >
               (ansible_memory_mb.real.total/2) | int | abs | string
                in result.stdout
+
+      always:
+        - name: Clean up
+          include_tasks: tasks/clean_instance.yml
+          tags: tests::cleanup
