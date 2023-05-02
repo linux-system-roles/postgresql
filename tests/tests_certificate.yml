@@ -9,6 +9,7 @@
         - name: Deploy postgresql
           include_role:
             name: linux-system-roles.postgresql
+            public: true
           vars:
             postgresql_certificates:
               - name: test_crt
@@ -44,4 +45,5 @@
           changed_when: false
 
         - name: Clean up
-          include_tasks: clean_instance.yml
+          include_tasks: tasks/clean_instance.yml
+          tags: tests::cleanup

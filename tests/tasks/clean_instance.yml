@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Run handlers
+  meta: flush_handlers
+
+- name: Uninstall postgresql
+  package:
+    name: "{{ __postgresql_packages }}"
+    state: absent
+
+- name: Remove data directory
+  file:
+    path: "{{ __postgresql_data_dir }}"
+    state: absent
+
+- name: Remove config files
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ __postgresql_main_conf_file }}"
+    - "{{ __postgresql_hba_conf_file }}"
+    - "{{ __postgresql_conf_file }}"
+    - "{{ __postgresql_internal_conf_file }}"
+
+- name: Dump logs
+  command: journalctl -u postgresql
+  changed_when: false

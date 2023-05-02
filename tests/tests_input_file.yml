@@ -2,27 +2,33 @@
 - name: Ensure that the role runs with input file
   hosts: all
   gather_facts: false
-
   tasks:
-    - name: Run postgresql role with input file
-      include_role:
-        name: linux-system-roles.postgresql
-      vars:
-        postgresql_input_file: simple.sql
+    - name: Run test and clean up
+      block:
+        - name: Run postgresql role with input file
+          include_role:
+            name: linux-system-roles.postgresql
+            public: true
+          vars:
+            postgresql_input_file: simple.sql
 
-    - name: Flush handlers
-      meta: flush_handlers
+        - name: Flush handlers
+          meta: flush_handlers
 
-    - name: Get content of database
-      become: true
-      become_user: postgres
-      shell: |
-        set -euo pipefail
-        echo "SELECT * FROM mytable;" | psql
-      register: result
-      changed_when: false
+        - name: Get content of database
+          become: true
+          become_user: postgres
+          shell: |
+            set -euo pipefail
+            echo "SELECT * FROM mytable;" | psql
+          register: result
+          changed_when: false
 
-    - name: Check content of databse
-      assert:
-        that: >
-          "1 row" in result.stdout
+        - name: Check content of databse
+          assert:
+            that: >
+              "1 row" in result.stdout
+      always:
+        - name: Clean up
+          include_tasks: tasks/clean_instance.yml
+          tags: tests::cleanup

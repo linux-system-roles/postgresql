@@ -45,7 +45,7 @@
     - name: Init DB
       command:
         cmd: postgresql-setup --initdb
-        creates: /var/lib/pgsql/data/postgresql.conf
+        creates: "{{ __postgresql_main_conf_file }}"
 
     - name: Start Postgresql server
       service:
@@ -76,7 +76,7 @@
 
     - name: Enable logging in by password
       replace:
-        path: /var/lib/pgsql/data/pg_hba.conf
+        path: "{{ __postgresql_hba_conf_file }}"
         regexp: '(peer|ident)$'
         replace: 'md5'
         backup: true
@@ -93,7 +93,7 @@
   become: true
   template:
     backup: true
-    dest: "/var/lib/pgsql/data/pg_hba.conf"
+    dest: "{{ __postgresql_hba_conf_file }}"
     src: pg_hba.conf.j2
     mode: 0600
     owner: postgres
@@ -109,8 +109,8 @@
 
 - name: Link generated conf file with server one
   lineinfile:
-    path: /var/lib/pgsql/data/postgresql.conf
-    line: "include_if_exists = '/etc/postgresql/system-roles-internal.conf'"
+    path: "{{ __postgresql_main_conf_file }}"
+    line: "include_if_exists = '{{ __postgresql_internal_conf_file }}'"
     insertafter: "EOF"
   notify: Restart postgresql
 
@@ -118,7 +118,7 @@
   become: true
   template:
     backup: true
-    dest: "/etc/postgresql/system-roles-internal.conf"
+    dest: "{{ __postgresql_internal_conf_file }}"
     src: postgresql-internal.conf.j2
     mode: 0600
     owner: postgres
@@ -131,7 +131,7 @@
       become: true
       template:
         backup: true
-        dest: "/etc/postgresql/system-roles.conf"
+        dest: "{{ __postgresql_conf_file }}"
         src: postgresql.conf.j2
         mode: 0600
         owner: postgres
@@ -139,6 +139,6 @@
 
     - name: Link generated conf file with server one
       lineinfile:
-        path: /var/lib/pgsql/data/postgresql.conf
-        line: "include_if_exists = '/etc/postgresql/system-roles.conf'"
+        path: "{{ __postgresql_main_conf_file }}"
+        line: "include_if_exists = '{{ __postgresql_conf_file }}'"
       notify: Restart postgresql

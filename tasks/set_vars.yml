@@ -24,7 +24,7 @@
 
 - name: Check postgresql.conf
   stat:
-    path: /var/lib/pgsql/data/postgresql.conf
+    path: "{{ __postgresql_main_conf_file }}"
   register: __postgresql_conf
 
 - name: Check TLS crt file
