@@ -1,6 +1,13 @@
 Changelog
 =========
 
+[1.0.3] - 2023-05-03
+--------------------
+
+### Other Changes
+
+- test: add cleanup to all tests - parameterize path names
+
 [1.0.2] - 2023-04-27
 --------------------
 
