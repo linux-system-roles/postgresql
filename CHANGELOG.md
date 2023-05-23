@@ -1,6 +1,15 @@
 Changelog
 =========
 
+[1.0.4] - 2023-05-23
+--------------------
+
+### Other Changes
+
+- docs: Consistent contributing.md for all roles - allow role specific contributing.md section
+- docs: add Collection requirements section
+- test: ensure facts for tests_include_vars_from_parent.yml
+
 [1.0.3] - 2023-05-03
 --------------------
 
