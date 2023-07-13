@@ -23,3 +23,12 @@ __postgresql_required_facts:
   - distribution_version
   - os_family
   - ansible_memory_mb
+
+# these facts cannot be used as a gather_subset
+__postgresql_no_subset_facts: [ansible_memory_mb]
+
+# the subsets of ansible_facts that need to be gathered in case any of the
+# facts in required_facts is missing; see the documentation of
+# the 'gather_subset' parameter of the 'setup' module
+__postgresql_required_facts_subsets: "{{ ['!all', '!min', 'hardware'] +
+  __postgresql_required_facts | difference(__postgresql_no_subset_facts) }}"
