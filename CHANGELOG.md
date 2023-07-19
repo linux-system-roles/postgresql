@@ -1,6 +1,23 @@
 Changelog
 =========
 
+[1.1.0] - 2023-07-19
+--------------------
+
+### New Features
+
+- feat: Enable support for Postgresql 15 (#44)
+
+### Bug Fixes
+
+- fix: facts being gathered unnecessarily (#43)
+
+### Other Changes
+
+- ci: Add pull request template and run commitlint on PR title only (#40)
+- ci: Rename commitlint to PR title Lint, echo PR titles from env var (#41)
+- ci: ansible-lint - ignore var-naming[no-role-prefix] (#42)
+
 [1.0.4] - 2023-05-23
 --------------------
 
