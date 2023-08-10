@@ -15,7 +15,7 @@ The role currently works with the PostgreSQL server 10, 12, and 13.
 
 The role requires some external collections.  Use this to install them:
 
-```
+```bash
 ansible-galaxy collection install -vv -r meta/collection-requirements.yml
 ```
 
