@@ -2,8 +2,6 @@
 
 [![ansible-lint.yml](https://github.com/linux-system-roles/postgresql/actions/workflows/ansible-lint.yml/badge.svg)](https://github.com/linux-system-roles/postgresql/actions/workflows/ansible-lint.yml) [![ansible-test.yml](https://github.com/linux-system-roles/postgresql/actions/workflows/ansible-test.yml/badge.svg)](https://github.com/linux-system-roles/postgresql/actions/workflows/ansible-test.yml) [![markdownlint.yml](https://github.com/linux-system-roles/postgresql/actions/workflows/markdownlint.yml/badge.svg)](https://github.com/linux-system-roles/postgresql/actions/workflows/markdownlint.yml) [![woke.yml](https://github.com/linux-system-roles/postgresql/actions/workflows/woke.yml/badge.svg)](https://github.com/linux-system-roles/postgresql/actions/workflows/woke.yml)
 
----
-
 The PostgreSQL system role installs, configures, and starts the PostgreSQL
 server.
 
