@@ -9,7 +9,7 @@ The role also optimizes the database server settings to improve performance.
 
 ## Requirements
 
-The role currently works with the PostgreSQL server 10, 12, and 13.
+The role currently works with the PostgreSQL server 10, 12, 13, and 15.
 
 ### Collection requirements
 
@@ -23,7 +23,7 @@ ansible-galaxy collection install -vv -r meta/collection-requirements.yml
 
 ### postgresql_verison
 
-You can set the version of the PostgreSQL server to 10, 12, or 13.
+You can set the version of the PostgreSQL server to 10, 12, 13, or 15.
 
 ```yaml
 postgresql_version: "13"
