@@ -1,6 +1,46 @@
 Changelog
 =========
 
+[1.1.1] - 2023-09-07
+--------------------
+
+### Other Changes
+
+- ci: Add markdownlint, test_converting_readme, and build_docs workflows (#46)
+
+  - markdownlint runs against README.md to avoid any issues with
+    converting it to HTML
+  - test_converting_readme converts README.md > HTML and uploads this test
+    artifact to ensure that conversion works fine
+  - build_docs converts README.md > HTML and pushes the result to the
+    docs branch to publish dosc to GitHub pages site.
+  - Fix markdown issues in README.md
+  
+  Signed-off-by: Sergei Petrosian <spetrosi@redhat.com>
+
+- docs: Make badges consistent, run markdownlint on all .md files (#47)
+
+  - Consistently generate badges for GH workflows in README RHELPLAN-146921
+  - Run markdownlint on all .md files
+  - Add custom-woke-action if not used already
+  - Rename woke action to Woke for a pretty badge
+  
+  Signed-off-by: Sergei Petrosian <spetrosi@redhat.com>
+
+- ci: Remove badges from README.md prior to converting to HTML (#48)
+
+  - Remove thematic break after badges
+  - Remove badges from README.md prior to converting to HTML
+  
+  Signed-off-by: Sergei Petrosian <spetrosi@redhat.com>
+
+- docs: Make supported versions and README consistent (#49)
+
+  - Add Postgresql version 15 into README
+  
+- ci: fix mode of vars/main.yml for ansible-test (#50)
+
+
 [1.1.0] - 2023-07-19
 --------------------
 
