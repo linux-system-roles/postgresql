@@ -95,7 +95,7 @@
     backup: true
     dest: "{{ __postgresql_hba_conf_file }}"
     src: pg_hba.conf.j2
-    mode: 0600
+    mode: "0600"
     owner: postgres
     group: postgres
   when: postgresql_pg_hba_conf is defined
@@ -105,7 +105,7 @@
   file:
     path: /etc/postgresql
     state: directory
-    mode: 0755
+    mode: "0755"
 
 - name: Link generated conf file with server one
   lineinfile:
@@ -120,7 +120,7 @@
     backup: true
     dest: "{{ __postgresql_internal_conf_file }}"
     src: postgresql-internal.conf.j2
-    mode: 0600
+    mode: "0600"
     owner: postgres
     group: postgres
 
@@ -133,7 +133,7 @@
         backup: true
         dest: "{{ __postgresql_conf_file }}"
         src: postgresql.conf.j2
-        mode: 0600
+        mode: "0600"
         owner: postgres
         group: postgres
 
