@@ -23,3 +23,5 @@ exclude_paths:
 mock_roles:
   - linux-system-roles.postgresql
   - linux-system-roles.certificate
+mock_modules:
+  - ansible.utils.update_fact

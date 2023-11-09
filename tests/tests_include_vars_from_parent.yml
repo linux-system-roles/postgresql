@@ -44,3 +44,7 @@
         name: caller
       vars:
         roletoinclude: linux-system-roles.postgresql
+
+    - name: Clean up
+      include_tasks: tasks/clean_instance.yml
+      tags: tests::cleanup
