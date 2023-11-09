@@ -189,6 +189,15 @@ server needs properly defined certificates and keys to run with enabled SSL/TLS.
 
 You can find more examples in the [`examples/`](examples) directory.
 
+## rpm-ostree
+
+NOTE: By default, `get_ostree_data.sh` will return the packages for the default
+version of PostgreSQL.  You will need to amend the output if you want to use a
+different version - e.g. change `@postgresql:13/server` to
+`@postgresql:15/server`
+
+See README-ostree.md for more information.
+
 ## License
 
 MIT

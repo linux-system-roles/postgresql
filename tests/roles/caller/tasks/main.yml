@@ -3,6 +3,7 @@
 
 - include_role:
     name: "{{ roletoinclude }}"
+    public: true
 
 - assert:
     that: not __caller_override

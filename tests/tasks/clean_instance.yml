@@ -5,8 +5,12 @@
 
 - name: Uninstall postgresql
   package:
-    name: "{{ __postgresql_packages }}"
+    name: "{{ __cleanup_packages }}"
     state: absent
+  vars:
+    __cleanup_packages: "{{ __postgresql_packages +
+      ['postgresql', 'postgresql-private-libs'] }}"
+  when: ansible_facts.pkg_mgr | d() != "ansible.posix.rhel_rpm_ostree"
 
 - name: Remove data directory
   file:

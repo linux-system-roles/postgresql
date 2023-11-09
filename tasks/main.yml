@@ -34,10 +34,18 @@
     - ansible_facts.packages["postgresql"][0].version |
       regex_search('([0-9]*).', '\\1') | first != postgresql_version | string
 
+# rpm ostree pkg mgr cannot handle @groups/modules
+# so just assume the packages are present
 - name: Ensure required packages are installed
   package:
-    name: "{{ __postgresql_packages }}"
+    name: "{{ __actual_packages }}"
     state: present
+  when: __actual_packages | length > 0
+  vars:
+    __actual_packages: "{{
+      (ansible_facts.pkg_mgr | d() == 'ansible.posix.rhel_rpm_ostree') |
+      ternary(__postgresql_packages | reject('match', '^@'),
+              __postgresql_packages) | list }}"
 
 - name: Init DB
   when: not __postgresql_conf.stat.exists
