@@ -10,7 +10,7 @@
 
 - name: Check if requested version is supported in the system (RHEL8)
   fail:
-    msg: RHEL 8 supports only Postgresql 10, 12 and 13
+    msg: RHEL 8 supports only Postgresql 10, 12, 13 and 15
   when:
     - ansible_facts["os_family"] == "RedHat"
     - ansible_facts["distribution_major_version"] == "8"
@@ -18,7 +18,7 @@
 
 - name: Check if requested version is supported in system (RHEL9)
   fail:
-    msg: RHEL 9 supports only Postgresql 13
+    msg: RHEL 9 supports only Postgresql 13 and 15
   when:
     - ansible_facts["os_family"] == "RedHat"
     - ansible_facts["distribution_major_version"] == "9"
