@@ -1,6 +1,17 @@
 Changelog
 =========
 
+[1.2.0] - 2023-11-29
+--------------------
+
+### New Features
+
+- feat: support for ostree systems (#62)
+
+### Other Changes
+
+- docs: fix error message to include support for Postgresql 15 (#63)
+
 [1.1.2] - 2023-11-06
 --------------------
 
