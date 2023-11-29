@@ -40,10 +40,12 @@
   package:
     name: "{{ __actual_packages }}"
     state: present
+    use: "{{ (__postgresql_is_ostree | d(false)) |
+             ternary('ansible.posix.rhel_rpm_ostree', omit) }}"
   when: __actual_packages | length > 0
   vars:
     __actual_packages: "{{
-      (ansible_facts.pkg_mgr | d() == 'ansible.posix.rhel_rpm_ostree') |
+      (__postgresql_is_ostree | d(false)) |
       ternary(__postgresql_packages | reject('match', '^@'),
               __postgresql_packages) | list }}"
 

@@ -10,7 +10,7 @@
   vars:
     __cleanup_packages: "{{ __postgresql_packages +
       ['postgresql', 'postgresql-private-libs'] }}"
-  when: ansible_facts.pkg_mgr | d() != "ansible.posix.rhel_rpm_ostree"
+  when: not __postgresql_is_ostree | d(false)
 
 - name: Remove data directory
   file:
