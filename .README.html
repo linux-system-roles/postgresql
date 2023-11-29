@@ -175,6 +175,7 @@ tunning</a></li>
 </ul></li>
 <li><a href="#example-playbook" id="toc-example-playbook">Example
 Playbook</a></li>
+<li><a href="#rpm-ostree" id="toc-rpm-ostree">rpm-ostree</a></li>
 <li><a href="#license" id="toc-license">License</a></li>
 </ul>
 </nav>
@@ -320,6 +321,13 @@ class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb11-1"><a href=
 <span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> linux-system-roles.postgresql</span></span></code></pre></div>
 <p>You can find more examples in the <a
 href="examples"><code>examples/</code></a> directory.</p>
+<h1 id="rpm-ostree">rpm-ostree</h1>
+<p>NOTE: By default, <code>get_ostree_data.sh</code> will return the
+packages for the default version of PostgreSQL. You will need to amend
+the output if you want to use a different version - e.g. change
+<code>@postgresql:13/server</code> to
+<code>@postgresql:15/server</code></p>
+<p>See README-ostree.md for more information.</p>
 <h1 id="license">License</h1>
 <p>MIT</p>
 </article>
