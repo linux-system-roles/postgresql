@@ -1,1 +1,0 @@
-roles/postgresql/.ostree/get_ostree_data.sh shebang!skip
