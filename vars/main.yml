@@ -6,8 +6,8 @@
 
 # Examples of non-distribution specific (generic) internal variables:
 __postgresql_packages: [postgresql-server]
-__postgresql_versions_el8: ["10", "12", "13", "15"]
-__postgresql_versions_el9: ["13", "15"]
+__postgresql_versions_el8: ["10", "12", "13", "15", "16"]
+__postgresql_versions_el9: ["13", "15", "16"]
 
 __postgresql_data_dir: /var/lib/pgsql/data
 
