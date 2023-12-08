@@ -1,6 +1,18 @@
 Changelog
 =========
 
+[1.3.0] - 2023-12-08
+--------------------
+
+### New Features
+
+- feat: Enable support for Postgresql 16 (#68)
+
+### Other Changes
+
+- ci: bump actions/github-script from 6 to 7 (#66)
+- refactor: get_ostree_data.sh use env shebang - remove from .sanity* (#67)
+
 [1.2.0] - 2023-11-29
 --------------------
 
