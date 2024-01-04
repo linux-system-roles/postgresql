@@ -1,5 +1,5 @@
 ---
-- name: Test role variable override
+- name: Test role include variable override
   hosts: all
   gather_facts: true
   tasks:
@@ -38,6 +38,7 @@
         varfiles: "{{ [facts['distribution']] | product(separators) |
           map('join') | product(versions) | map('join') | list +
           [facts['distribution'], facts['os_family']] }}"
+      register: __varfiles_created
 
     - name: Import role
       import_role:
@@ -45,6 +46,15 @@
       vars:
         roletoinclude: linux-system-roles.postgresql
 
-    - name: Clean up
+    - name: Clean up db instance
       include_tasks: tasks/clean_instance.yml
+      tags: tests::cleanup
+
+    - name: Cleanup
+      file:
+        path: "{{ item.dest }}"
+        state: absent
+      loop: "{{ __varfiles_created.results }}"
+      delegate_to: localhost
+      when: inventory_hostname == ansible_play_hosts_all[0]
       tags: tests::cleanup
