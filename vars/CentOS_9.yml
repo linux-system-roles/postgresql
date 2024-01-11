@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: MIT
+---
+# Put internal variables here with CentOS 9 specific values.
+
+__postgresql_packages: >-
+  {{ ['@postgresql:' + postgresql_version +
+       '/server'] if postgresql_version != '13' else
+       ['postgresql-server'] }}
