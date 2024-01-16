@@ -1,6 +1,18 @@
 Changelog
 =========
 
+[1.3.1] - 2024-01-16
+--------------------
+
+### Bug Fixes
+
+- fix: Enable PostgreSQL stream selection for c9s and RHEL9 (#72)
+
+### Other Changes
+
+- ci: support ansible-lint and ansible-test 2.16 (#70)
+- ci: Use supported ansible-lint action; run ansible-lint against the collection (#71)
+
 [1.3.0] - 2023-12-08
 --------------------
 
