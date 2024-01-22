@@ -7,10 +7,10 @@
         postgresql_password: redhat
       block:
         - name: Deploy postgresql
-          include_role:
-            name: linux-system-roles.postgresql
-            public: true
+          include_tasks: tasks/install_and_check.yml
           vars:
+            __test_clean_instance: false
+            __test_check_unix_socket: false
             postgresql_certificates:
               - name: test_crt
                 dns: www.example.com
@@ -23,9 +23,6 @@
                 auth_method: md5
                 address: '127.0.0.1/32'
 
-        - name: Flush handlers
-          meta: flush_handlers
-
         - name: Gather output of psql
           environment:
             PGPASSWORD: "{{ postgresql_password }}"
@@ -37,7 +34,7 @@
 
         - name: Check output of psql
           assert:
-            that: >
+            that: >-
               "SSL connection" in result.stdout
       always:
         - name: Stop tracking certificate

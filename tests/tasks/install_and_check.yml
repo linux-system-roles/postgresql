@@ -1,0 +1,78 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Test default settings
+  block:
+    - name: Run postgresql role
+      include_role:
+        name: linux-system-roles.postgresql
+        public: true
+
+    - name: Flush handlers
+      meta: flush_handlers
+
+    - name: Test - postgresql-server running
+      # noqa command-instead-of-module
+      command: systemctl is-active postgresql
+      changed_when: false
+
+    - name: Test - postgresql-server is enabled
+      # noqa command-instead-of-module
+      command: systemctl is-enabled postgresql
+      changed_when: false
+
+    - name: Test - database is accessible for super user using Unix socket
+      become: true
+      become_user: postgres
+      shell: |
+        set -euo pipefail
+        echo '\q' | psql
+      async: 3             # in case of password prompt we need to fail
+      changed_when: false
+      when: __test_check_unix_socket | d(true)
+
+    - name: Check - server tuning is used - shared buffers
+      become: true
+      become_user: postgres
+      shell: |
+        set -euo pipefail
+        echo "SHOW shared_buffers;" | psql
+      register: result
+      changed_when: false
+      when: __test_check_unix_socket | d(true)
+
+    - name: Test - server tuning is used - shared buffers
+      assert:
+        that: >
+          (ansible_memory_mb.real.total/4) | int | abs | string
+          in result.stdout
+      when: __test_check_unix_socket | d(true)
+
+    - name: Check - server tuning is used - effective cache size
+      become: true
+      become_user: postgres
+      shell: |
+        set -euo pipefail
+        echo "SHOW effective_cache_size;" | psql
+      register: result
+      changed_when: false
+      when: __test_check_unix_socket | d(true)
+
+    - name: Test - server tuning is used - effective cache size
+      assert:
+        that: >
+          (ansible_memory_mb.real.total/2) | int | abs | string
+            in result.stdout
+      when: __test_check_unix_socket | d(true)
+
+    - name: Check postgresql version matches postgresql_version
+      command: postgres --version
+      when: __test_check_version | d(false)
+      register: __version
+      changed_when: false
+      failed_when: not __version.stdout is
+        search(" " ~ postgresql_version ~ "[^0-9]")
+
+  always:
+    - name: Clean up
+      include_tasks: clean_instance.yml
+      when: __test_clean_instance | d(true)
