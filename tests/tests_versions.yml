@@ -2,6 +2,7 @@
 ---
 - name: Test installing and uninstalling all supported versions
   hosts: all
+  gather_facts: true
   tasks:
     - name: Skip test if distro does not support multiple versions
       meta: end_host
@@ -19,7 +20,7 @@
 
     - name: Install and cleanup the other supported versions
       include_tasks: tasks/install_and_check.yml
-      loop: "{{ __versions }}"
+      loop: "{{ __versions | difference(__unsuppported_versions) }}"
       when: item != __default_version  # we already installed it
       vars:
         __test_check_version: true
@@ -28,4 +29,11 @@
           if ansible_facts['distribution_major_version'] == '8'
           else __postgresql_versions_el9
           if ansible_facts['distribution_major_version'] == '9'
+          else [] }}"
+        __unsuppported_versions: "{{ ['16']
+          if ansible_facts['distribution'] == 'RedHat' and
+          ((ansible_facts['distribution_major_version'] == '8' and
+          ansible_facts['distribution_version'] is version('8.10', '<'))
+          or (ansible_facts['distribution_major_version'] == '9' and
+          ansible_facts['distribution_version'] is version('9.4', '<')))
           else [] }}"
