@@ -1,6 +1,13 @@
 Changelog
 =========
 
+[1.3.3] - 2024-01-31
+--------------------
+
+### Other Changes
+
+- test: tests_versions gather_facts; skip version 16 if not supported (#76)
+
 [1.3.2] - 2024-01-23
 --------------------
 
