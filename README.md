@@ -21,7 +21,7 @@ ansible-galaxy collection install -vv -r meta/collection-requirements.yml
 
 ## Role Variables
 
-### postgresql_verison
+### postgresql_version
 
 You can set the version of the PostgreSQL server to 10, 12, 13, 15 or 16.
 
