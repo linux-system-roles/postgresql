@@ -1,6 +1,15 @@
 Changelog
 =========
 
+[1.3.4] - 2024-02-08
+--------------------
+
+### Other Changes
+
+- ci: fix python unit test - copy pytest config to tests/unit (#78)
+- docs: fix role var typo (#79)
+- test: skip versions tests if ostree (#80)
+
 [1.3.3] - 2024-01-31
 --------------------
 
