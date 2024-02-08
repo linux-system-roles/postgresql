@@ -14,6 +14,10 @@
       vars:
         __test_check_version: true
 
+    - name: Skip remaining tests if ostree - cannot uninstall/reinstall
+      meta: end_host
+      when: __postgresql_is_ostree | d(false)
+
     - name: Save default postgresql_version
       set_fact:
         __default_version: "{{ postgresql_version }}"
