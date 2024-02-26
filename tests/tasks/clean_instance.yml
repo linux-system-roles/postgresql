@@ -12,6 +12,13 @@
       ['postgresql', 'postgresql-private-libs'] }}"
   when: not __postgresql_is_ostree | d(false)
 
+- name: Stop and disable postgresql service
+  service:
+    name: postgresql
+    state: stopped
+    enabled: false
+  when: __postgresql_is_ostree | d(false)
+
 - name: Remove data directory
   file:
     path: "{{ __postgresql_data_dir }}"
