@@ -1,6 +1,13 @@
 Changelog
 =========
 
+[1.3.5] - 2024-02-26
+--------------------
+
+### Other Changes
+
+- test: stop and disable service on ostree systems (#82)
+
 [1.3.4] - 2024-02-08
 --------------------
 
