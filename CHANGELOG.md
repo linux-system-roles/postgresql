@@ -1,6 +1,14 @@
 Changelog
 =========
 
+[1.3.6] - 2024-04-04
+--------------------
+
+### Other Changes
+
+- ci: bump ansible/ansible-lint from 6 to 24 (#84)
+- ci: bump mathieudutour/github-tag-action from 6.1 to 6.2 (#85)
+
 [1.3.5] - 2024-02-26
 --------------------
 
@@ -115,7 +123,6 @@ Changelog
   - Add Postgresql version 15 into README
   
 - ci: fix mode of vars/main.yml for ansible-test (#50)
-
 
 [1.1.0] - 2023-07-19
 --------------------
