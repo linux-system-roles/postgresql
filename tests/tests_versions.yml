@@ -7,7 +7,7 @@
     - name: Skip test if distro does not support multiple versions
       meta: end_host
       when: ansible_facts['distribution'] not in ['CentOS', 'RedHat'] or
-        ansible_facts['distribution_major_version'] not in ["8", "9"]
+        ansible_facts['distribution_major_version'] not in ["8", "9", "10"]
 
     - name: Install and cleanup default version
       include_tasks: tasks/install_and_check.yml
@@ -33,6 +33,8 @@
           if ansible_facts['distribution_major_version'] == '8'
           else __postgresql_versions_el9
           if ansible_facts['distribution_major_version'] == '9'
+          else __postgresql_versions_el10
+          if ansible_facts['distribution_major_version'] == '10'
           else [] }}"
         __unsuppported_versions: "{{ ['16']
           if ansible_facts['distribution'] == 'RedHat' and

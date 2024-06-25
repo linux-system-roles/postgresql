@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: MIT
+---
+__postgresql_packages: >-
+  {{ ['@postgresql:' + postgresql_version +
+       '/server'] if postgresql_version != '16' else
+       ['postgresql-server'] }}
