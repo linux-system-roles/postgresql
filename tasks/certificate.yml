@@ -52,6 +52,9 @@
     - __postgresql_cert.stat.exists
     - __postgresql_key.stat.exists
     - postgresql_certificates | length < 1
+  vars:
+    __pg_server_crt: "{{ __postgresql_data_dir }}/server.crt"
+    __pg_server_key: "{{ __postgresql_data_dir }}/server.key"
   block:
     - name: Install certificate file
       file:

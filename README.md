@@ -92,7 +92,8 @@ postgresql_ssl_enable: true
 If you want to use your own certificate and private key, use the
 `postgresql_cert_name` variable to specify the certificate name. You must keep
 both certificate and key files in the same directory and under the same name
-with the `.crt` and `.key` suffixes.
+with the `.crt` and `.key` suffixes on the managed node. The value should be an
+absolute path.
 
 For example, if your certificate file is located in `/etc/certs/server.crt` and
 your private key in `/etc/certs/server.key`, set the `postgresql_cert_name`
