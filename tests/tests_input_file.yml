@@ -24,7 +24,7 @@
           register: result
           changed_when: false
 
-        - name: Check content of databse
+        - name: Check content of database
           assert:
             that: >
               "1 row" in result.stdout
