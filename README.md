@@ -1,6 +1,6 @@
 # PostgreSQL system role
 
-[![ansible-lint.yml](https://github.com/linux-system-roles/postgresql/actions/workflows/ansible-lint.yml/badge.svg)](https://github.com/linux-system-roles/postgresql/actions/workflows/ansible-lint.yml) [![ansible-test.yml](https://github.com/linux-system-roles/postgresql/actions/workflows/ansible-test.yml/badge.svg)](https://github.com/linux-system-roles/postgresql/actions/workflows/ansible-test.yml) [![markdownlint.yml](https://github.com/linux-system-roles/postgresql/actions/workflows/markdownlint.yml/badge.svg)](https://github.com/linux-system-roles/postgresql/actions/workflows/markdownlint.yml) [![tft.yml](https://github.com/linux-system-roles/postgresql/actions/workflows/tft.yml/badge.svg)](https://github.com/linux-system-roles/postgresql/actions/workflows/tft.yml) [![tft_citest_bad.yml](https://github.com/linux-system-roles/postgresql/actions/workflows/tft_citest_bad.yml/badge.svg)](https://github.com/linux-system-roles/postgresql/actions/workflows/tft_citest_bad.yml) [![woke.yml](https://github.com/linux-system-roles/postgresql/actions/workflows/woke.yml/badge.svg)](https://github.com/linux-system-roles/postgresql/actions/workflows/woke.yml)
+[![ansible-lint.yml](https://github.com/linux-system-roles/postgresql/actions/workflows/ansible-lint.yml/badge.svg)](https://github.com/linux-system-roles/postgresql/actions/workflows/ansible-lint.yml) [![ansible-test.yml](https://github.com/linux-system-roles/postgresql/actions/workflows/ansible-test.yml/badge.svg)](https://github.com/linux-system-roles/postgresql/actions/workflows/ansible-test.yml) [![codespell.yml](https://github.com/linux-system-roles/postgresql/actions/workflows/codespell.yml/badge.svg)](https://github.com/linux-system-roles/postgresql/actions/workflows/codespell.yml) [![markdownlint.yml](https://github.com/linux-system-roles/postgresql/actions/workflows/markdownlint.yml/badge.svg)](https://github.com/linux-system-roles/postgresql/actions/workflows/markdownlint.yml) [![tft.yml](https://github.com/linux-system-roles/postgresql/actions/workflows/tft.yml/badge.svg)](https://github.com/linux-system-roles/postgresql/actions/workflows/tft.yml) [![tft_citest_bad.yml](https://github.com/linux-system-roles/postgresql/actions/workflows/tft_citest_bad.yml/badge.svg)](https://github.com/linux-system-roles/postgresql/actions/workflows/tft_citest_bad.yml) [![woke.yml](https://github.com/linux-system-roles/postgresql/actions/workflows/woke.yml/badge.svg)](https://github.com/linux-system-roles/postgresql/actions/workflows/woke.yml)
 
 The PostgreSQL system role installs, configures, and starts the PostgreSQL
 server.
@@ -132,7 +132,7 @@ postgresql_input_file: "/tmp/mypath/file.sql"
 ### postgresql_server_tuning
 
 By default, the PostgreSQL system role enables server settings optimization
-based on system resources. To disabe the tuning, set the
+based on system resources. To disable the tuning, set the
 `postgresql_server_tuning` variable to `false`.
 
 ```yaml
@@ -149,7 +149,7 @@ This section should cover role behavior for repeated runs.
 
 Once you set the password by using the `postgresql_password` variable, it is
 impossible to change the password by setting another value. You must use the
-`postgresql_password` variable for every database acces under the superuser,
+`postgresql_password` variable for every database access under the superuser,
 including running an SQL script (the functionality of the
 `postgresql_input_file` variable).
 
@@ -165,7 +165,7 @@ Once the PostgreSQL server is installed, it is impossible to upgrade or
 downgrade the server by increasing or decreasing the version number in the
 `postgresql_version` variable.
 
-### Server tunning
+### Server tuning
 
 This option reflects the setup of the latest run of the role.
 
