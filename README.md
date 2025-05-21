@@ -42,6 +42,8 @@ postgresql_password: !vault |
           ....
 ```
 
+This option is not available for running the role in container builds.
+
 ### postgresql_pg_hba_conf
 
 The content of the `postgresql_pg_hba_conf` variable replaces the default
@@ -128,6 +130,8 @@ To run an SQL script, define a path to your SQL file by using the
 ```yaml
 postgresql_input_file: "/tmp/mypath/file.sql"
 ```
+
+This option is not available for running the role in container builds.
 
 ### postgresql_server_tuning
 

@@ -14,6 +14,7 @@
       # noqa command-instead-of-module
       command: systemctl is-active postgresql
       changed_when: false
+      when: __postgresql_is_booted | bool
 
     - name: Test - postgresql-server is enabled
       # noqa command-instead-of-module
@@ -28,7 +29,9 @@
         echo '\q' | psql
       async: 3             # in case of password prompt we need to fail
       changed_when: false
-      when: __test_check_unix_socket | d(true)
+      when:
+        - __test_check_unix_socket | d(true)
+        - __postgresql_is_booted | bool
 
     - name: Check - server tuning is used - shared buffers
       become: true
@@ -38,14 +41,18 @@
         echo "SHOW shared_buffers;" | psql
       register: result
       changed_when: false
-      when: __test_check_unix_socket | d(true)
+      when:
+        - __test_check_unix_socket | d(true)
+        - __postgresql_is_booted | bool
 
     - name: Test - server tuning is used - shared buffers
       assert:
         that: >
           (ansible_memory_mb.real.total/4) | int | abs | string
           in result.stdout
-      when: __test_check_unix_socket | d(true)
+      when:
+        - __test_check_unix_socket | d(true)
+        - __postgresql_is_booted | bool
 
     - name: Check - server tuning is used - effective cache size
       become: true
@@ -55,14 +62,18 @@
         echo "SHOW effective_cache_size;" | psql
       register: result
       changed_when: false
-      when: __test_check_unix_socket | d(true)
+      when:
+        - __test_check_unix_socket | d(true)
+        - __postgresql_is_booted | bool
 
     - name: Test - server tuning is used - effective cache size
       assert:
         that: >
           (ansible_memory_mb.real.total/2) | int | abs | string
             in result.stdout
-      when: __test_check_unix_socket | d(true)
+      when:
+        - __test_check_unix_socket | d(true)
+        - __postgresql_is_booted | bool
 
     - name: Check postgresql version matches postgresql_version
       command: postgres --version
