@@ -61,17 +61,9 @@
 
 - name: Init DB
   when: not __postgresql_conf.stat.exists
-  block:
-    - name: Init DB
-      command:
-        cmd: postgresql-setup --initdb
-        creates: "{{ __postgresql_main_conf_file }}"
-
-    - name: Start Postgresql server
-      service:
-        name: postgresql
-        state: started
-        enabled: true
+  command:
+    cmd: postgresql-setup --initdb
+    creates: "{{ __postgresql_main_conf_file }}"
 
 - name: Enable and start existing instance of postgresql server
   service:
