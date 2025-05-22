@@ -15,7 +15,7 @@
 - name: Stop and disable postgresql service
   service:
     name: postgresql
-    state: stopped
+    state: "{{ 'stopped' if __postgresql_is_booted else omit }}"
     enabled: false
   when: __postgresql_is_ostree | d(false)
 

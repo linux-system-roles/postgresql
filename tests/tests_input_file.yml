@@ -28,6 +28,18 @@
           assert:
             that: >
               "1 row" in result.stdout
+
+      rescue:
+        - name: Expected to fail in non-booted systems, check error
+          assert:
+            that: '"postgresql_input_file option is only supported on booted hosts" in ansible_failed_result.msg'
+          when: not __postgresql_is_booted | bool
+
+        - name: Role must succeed on booted systems
+          fail:
+            msg: "Unexpected failure on booted system: {{ ansible_failed_result.msg }}"
+          when: __postgresql_is_booted | bool
+
       always:
         - name: Clean up
           include_tasks: tasks/clean_instance.yml

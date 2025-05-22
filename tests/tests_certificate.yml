@@ -1,6 +1,9 @@
 ---
 - name: Test PostgreSQL server with ssl support using certificate role
   hosts: all
+  tags:
+    # certificate role does not work in container builds
+    - tests::booted
   tasks:
     - name: Test PostgreSQL server with certificate in default path
       vars:
