@@ -209,6 +209,8 @@ Vault.</p>
 class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">postgresql_password</span><span class="kw">: </span><span class="at">!vault </span><span class="ch">|</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>          $ANSIBLE_VAULT;1.2;AES256;dev</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>          ....</span></code></pre></div>
+<p>This option is not available for running the role in container
+builds.</p>
 <h2 id="postgresql_pg_hba_conf">postgresql_pg_hba_conf</h2>
 <p>The content of the <code>postgresql_pg_hba_conf</code> variable
 replaces the default upstream configuration in the
@@ -276,6 +278,8 @@ class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb8-1"><a href="
 <code>postgresql_input_file</code> variable:</p>
 <div class="sourceCode" id="cb9"><pre
 class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">postgresql_input_file</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;/tmp/mypath/file.sql&quot;</span></span></code></pre></div>
+<p>This option is not available for running the role in container
+builds.</p>
 <h2 id="postgresql_server_tuning">postgresql_server_tuning</h2>
 <p>By default, the PostgreSQL system role enables server settings
 optimization based on system resources. To disable the tuning, set the
