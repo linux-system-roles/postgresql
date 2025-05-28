@@ -1,0 +1,29 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Bootc end-to-end test
+  hosts: all
+  tags:
+    - tests::bootc-e2e
+  gather_facts: false
+  tasks:
+    - name: Bootc image build preparation
+      when: ansible_connection | d("") == "buildah"
+      block:
+        - name: Run postgresql role
+          include_role:
+            name: linux-system-roles.postgresql
+
+        - name: Create QEMU deployment
+          delegate_to: localhost
+          command: "{{ lsr_scriptdir }}/bootc-buildah-qcow.sh {{ ansible_host }}"
+          changed_when: true
+
+    - name: Validation of deployed image
+      when: ansible_connection | d("") != "buildah"
+      block:
+        - name: Test default settings
+          include_tasks: tasks/install_and_check.yml
+          vars:
+            __run_role: false
+            __test_clean_instance: false
+            __postgresql_is_booted: true

@@ -6,6 +6,7 @@
       include_role:
         name: linux-system-roles.postgresql
         public: true
+      when: __run_role | d(true) | bool
 
     - name: Flush handlers
       meta: flush_handlers
@@ -53,6 +54,8 @@
       when:
         - __test_check_unix_socket | d(true)
         - __postgresql_is_booted | bool
+        # role ran in container, disabled tuning
+        - not (__bootc_validation | d(false))
 
     - name: Check - server tuning is used - effective cache size
       become: true
@@ -74,6 +77,8 @@
       when:
         - __test_check_unix_socket | d(true)
         - __postgresql_is_booted | bool
+        # role ran in container, disabled tuning
+        - not (__bootc_validation | d(false))
 
     - name: Check postgresql version matches postgresql_version
       command: postgres --version
