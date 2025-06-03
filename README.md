@@ -143,6 +143,11 @@ based on system resources. To disable the tuning, set the
 postgresql_server_tuning: false
 ```
 
+However, when running against a
+[buildah connection](https://docs.ansible.com/ansible/latest/collections/containers/podman/buildah_connection.html),
+i.e. a container build, this defaults to `false`. The available RAM during a
+container build is independent of the actual deployment.
+
 See the [`examples/`](examples) for details.
 
 ## Idempotence
