@@ -10,7 +10,10 @@ postgresql_version: "{{ '16' if ansible_facts['os_family'] == 'RedHat'
   else '13' }}"
 postgresql_password: null
 postgresql_cert_name: null
-postgresql_server_tuning: true
+# the container build environment's RAM is independent from the deployment
+# (regardless if it's a bootc or system container one), so disable tuning there
+# by default
+postgresql_server_tuning: "{{ false if (ansible_connection | d('')) == 'buildah' else true }}"
 postgresql_ssl_enable: false
 
 # If you want to generate the certificas in the postgresql role
