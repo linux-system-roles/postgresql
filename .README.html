@@ -58,8 +58,9 @@ SOFTWARE.
   </style>
   <style type="text/css">code{white-space: pre;}</style>
   <style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -70,7 +71,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -169,8 +170,8 @@ change</a></li>
 id="toc-config-file-redefinition">Config file redefinition</a></li>
 <li><a href="#version-change" id="toc-version-change">Version
 change</a></li>
-<li><a href="#server-tunning" id="toc-server-tunning">Server
-tunning</a></li>
+<li><a href="#server-tuning" id="toc-server-tuning">Server
+tuning</a></li>
 <li><a href="#ssl-usage" id="toc-ssl-usage">SSL usage</a></li>
 </ul></li>
 <li><a href="#example-playbook" id="toc-example-playbook">Example
@@ -208,6 +209,8 @@ Vault.</p>
 class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">postgresql_password</span><span class="kw">: </span><span class="at">!vault </span><span class="ch">|</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>          $ANSIBLE_VAULT;1.2;AES256;dev</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>          ....</span></code></pre></div>
+<p>This option is not available for running the role in container
+builds.</p>
 <h2 id="postgresql_pg_hba_conf">postgresql_pg_hba_conf</h2>
 <p>The content of the <code>postgresql_pg_hba_conf</code> variable
 replaces the default upstream configuration in the
@@ -275,13 +278,20 @@ class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb8-1"><a href="
 <code>postgresql_input_file</code> variable:</p>
 <div class="sourceCode" id="cb9"><pre
 class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">postgresql_input_file</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;/tmp/mypath/file.sql&quot;</span></span></code></pre></div>
+<p>This option is not available for running the role in container
+builds.</p>
 <h2 id="postgresql_server_tuning">postgresql_server_tuning</h2>
 <p>By default, the PostgreSQL system role enables server settings
-optimization based on system resources. To disabe the tuning, set the
+optimization based on system resources. To disable the tuning, set the
 <code>postgresql_server_tuning</code> variable to
 <code>false</code>.</p>
 <div class="sourceCode" id="cb10"><pre
 class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">postgresql_server_tuning</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span></code></pre></div>
+<p>However, when running against a <a
+href="https://docs.ansible.com/ansible/latest/collections/containers/podman/buildah_connection.html">buildah
+connection</a>, i.e. a container build, this defaults to
+<code>false</code>. The available RAM during a container build is
+independent of the actual deployment.</p>
 <p>See the <a href="examples"><code>examples/</code></a> for
 details.</p>
 <h1 id="idempotence">Idempotence</h1>
@@ -290,9 +300,9 @@ details.</p>
 <p>Once you set the password by using the
 <code>postgresql_password</code> variable, it is impossible to change
 the password by setting another value. You must use the
-<code>postgresql_password</code> variable for every database acces under
-the superuser, including running an SQL script (the functionality of the
-<code>postgresql_input_file</code> variable).</p>
+<code>postgresql_password</code> variable for every database access
+under the superuser, including running an SQL script (the functionality
+of the <code>postgresql_input_file</code> variable).</p>
 <h2 id="config-file-redefinition">Config file redefinition</h2>
 <p>Configuration files generated from
 <code>postgresql_pg_hba_conf</code> and <code>postgresql_conf</code> are
@@ -302,7 +312,7 @@ previous configuration.</p>
 <p>Once the PostgreSQL server is installed, it is impossible to upgrade
 or downgrade the server by increasing or decreasing the version number
 in the <code>postgresql_version</code> variable.</p>
-<h2 id="server-tunning">Server tunning</h2>
+<h2 id="server-tuning">Server tuning</h2>
 <p>This option reflects the setup of the latest run of the role.</p>
 <h2 id="ssl-usage">SSL usage</h2>
 <p>This option reflects the setup of the latest run of the role. The
