@@ -42,4 +42,4 @@
 - name: Remove sql script from the host {{ postgresql_input_file }}
   file:
     state: absent
-    path: /tmp/input.sql
+    path: "{{ __postgresql_sql_tempfile.path }}"
