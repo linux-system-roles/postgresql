@@ -1,6 +1,13 @@
 Changelog
 =========
 
+[1.4.1] - 2025-06-23
+--------------------
+
+### Bug Fixes
+
+- fix: Fix removing sql script from the host after inputting it (#131)
+
 [1.4.0] - 2025-06-16
 --------------------
 
