@@ -61,8 +61,8 @@
 
 - name: Init DB on booted systems
   when:
-   - not __postgresql_conf.stat.exists
-   - __postgresql_is_booted | bool
+    - not __postgresql_conf.stat.exists
+    - __postgresql_is_booted | bool
   command:
     cmd: postgresql-setup --initdb
     creates: "{{ __postgresql_main_conf_file }}"
@@ -72,8 +72,8 @@
 # out and replace with static values
 - name: Init DB on non-booted systems
   when:
-   - not __postgresql_conf.stat.exists
-   - not __postgresql_is_booted | bool
+    - not __postgresql_conf.stat.exists
+    - not __postgresql_is_booted | bool
   shell:
     cmd: |
       set -euo pipefail
