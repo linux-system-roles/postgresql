@@ -56,7 +56,7 @@
     - name: Test - server tuning is used - shared buffers
       assert:
         that: >
-          (ansible_memory_mb.real.total/4) | int | abs | string
+          (ansible_facts.memory_mb.real.total/4) | int | abs | string
           in result.stdout
       when:
         - __test_check_unix_socket | d(true)
@@ -79,7 +79,7 @@
     - name: Test - server tuning is used - effective cache size
       assert:
         that: >
-          (ansible_memory_mb.real.total/2) | int | abs | string
+          (ansible_facts.memory_mb.real.total/2) | int | abs | string
             in result.stdout
       when:
         - __test_check_unix_socket | d(true)

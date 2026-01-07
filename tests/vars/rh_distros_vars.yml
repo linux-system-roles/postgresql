@@ -14,7 +14,7 @@ __postgresql_rh_distros:
 __postgresql_rh_distros_fedora: "{{ __postgresql_rh_distros + ['Fedora'] }}"
 
 # Use this in conditionals to check if distro is Red Hat or clone
-__postgresql_is_rh_distro: "{{ ansible_distribution in __postgresql_rh_distros }}"
+__postgresql_is_rh_distro: "{{ ansible_facts['distribution'] in __postgresql_rh_distros }}"
 
 # Use this in conditionals to check if distro is Red Hat or clone, or Fedora
-__postgresql_is_rh_distro_fedora: "{{ ansible_distribution in __postgresql_rh_distros_fedora }}"
+__postgresql_is_rh_distro_fedora: "{{ ansible_facts['distribution'] in __postgresql_rh_distros_fedora }}"
