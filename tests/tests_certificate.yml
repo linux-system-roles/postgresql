@@ -38,7 +38,8 @@
         - name: Check output of psql
           assert:
             that: >-
-              "SSL connection" in result.stdout
+              "SSL connection" in result.stdout or
+              "SSL Connection" in result.stdout
       always:
         - name: Stop tracking certificate
           command: getcert stop-tracking -f /etc/pki/tls/certs/test_crt.crt
