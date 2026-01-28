@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
 ---
 __postgresql_packages: >-
-  {{ ['@postgresql' + postgresql_version +
+  {{ ['postgresql' + postgresql_version +
        '-server'] }}
