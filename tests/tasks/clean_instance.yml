@@ -5,12 +5,17 @@
 
 - name: Uninstall postgresql
   package:
-    name: "{{ __cleanup_packages }}"
+    name: "{{ __postgresql_packages + __cleanup_packages }}"
     state: absent
-  vars:
-    __cleanup_packages: "{{ __postgresql_packages +
-      ['postgresql', 'postgresql-private-libs'] }}"
   when: not __postgresql_is_ostree | d(false)
+  vars:
+    __cleanup_packages:
+      - postgresql
+      - postgresql-any
+      - postgresql-private-libs
+      - postgresql{{ postgresql_version }}
+      - postgresql{{ postgresql_version }}-any
+      - postgresql{{ postgresql_version }}-private-libs
 
 - name: Stop and disable postgresql service
   service:
