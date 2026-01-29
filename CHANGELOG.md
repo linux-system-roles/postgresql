@@ -1,6 +1,17 @@
 Changelog
 =========
 
+[1.5.0] - 2026-01-28
+--------------------
+
+### New Features
+
+- feat: Add support for postgresql 18 (#160)
+
+### Other Changes
+
+- test: add more packages for postgresql cleanup (#161)
+
 [1.4.6] - 2026-01-13
 --------------------
 
