@@ -36,10 +36,19 @@
           else __postgresql_versions_el10
           if ansible_facts['distribution_major_version'] == '10'
           else [] }}"
-        __unsuppported_versions: "{{ ['16']
+        __unsuppported_versions: "{{ __unsuppported_versions_16 + __unsuppported_versions_18 }}"
+        __unsuppported_versions_16: "{{ ['16']
           if ansible_facts['distribution'] == 'RedHat' and
           ((ansible_facts['distribution_major_version'] == '8' and
           ansible_facts['distribution_version'] is version('8.10', '<'))
           or (ansible_facts['distribution_major_version'] == '9' and
           ansible_facts['distribution_version'] is version('9.4', '<')))
+          else [] }}"
+        __unsuppported_versions_18: "{{ ['18']
+          if ansible_facts['distribution'] == 'RedHat' and
+          ((ansible_facts['distribution_major_version'] == '8')
+          or (ansible_facts['distribution_major_version'] == '9' and
+          ansible_facts['distribution_version'] is version('9.8', '<'))
+          or (ansible_facts['distribution_major_version'] == '10' and
+          ansible_facts['distribution_version'] is version('10.2', '<')))
           else [] }}"
