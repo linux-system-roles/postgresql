@@ -1,6 +1,16 @@
 Changelog
 =========
 
+[1.5.1] - 2026-02-06
+--------------------
+
+### Other Changes
+
+- ci: bump ansible/ansible-lint from 25 to 26 (#163)
+- ci: skip most CI checks if title contains citest skip [citest_skip] (#164)
+- ci: ansible-lint - remove .collection directory from converted collection [citest_skip] (#165)
+- test: ensure supported versions on RHEL major + minor releases (#166)
+
 [1.5.0] - 2026-01-28
 --------------------
 
