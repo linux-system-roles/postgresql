@@ -14,17 +14,31 @@
     - name: Install certificate from the default path
       file:
         src: >-
-          /etc/pki/tls/certs/{{ (postgresql_certificates |
+          {{ __postgresql_cert_directory }}/certs/{{ (postgresql_certificates |
           first)['name'] }}.crt
         dest: "{{ __pg_server_crt }}"
         state: link
         owner: postgres
       when: (postgresql_certificates | first)['name'] is not abs
 
+    - name: Ensure private key directory is traversable
+      file:
+        path: "{{ __postgresql_cert_directory }}/private"
+        mode: "o+x"
+
+    - name: Ensure private key is readable by postgres
+      file:
+        path: >-
+          {{ __postgresql_cert_directory }}/private/{{ (postgresql_certificates |
+          first)['name'] }}.key
+        owner: postgres
+        mode: "0600"
+      when: (postgresql_certificates | first)['name'] is not abs
+
     - name: Install certificate from the default path
       file:
         src: >-
-          /etc/pki/tls/private/{{ (postgresql_certificates |
+          {{ __postgresql_cert_directory }}/private/{{ (postgresql_certificates |
           first)['name'] }}.key
         dest: "{{ __pg_server_key }}"
         state: link
