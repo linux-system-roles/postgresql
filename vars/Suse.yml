@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: MIT
+---
+# SUSE-specific variables
+# SUSE does not have postgresql-setup, initdb is called directly
+__postgresql_packages: [postgresql-server]
+__postgresql_has_setup_cmd: false
+__postgresql_cert_directory: /etc/ssl

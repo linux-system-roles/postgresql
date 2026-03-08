@@ -21,5 +21,6 @@ galaxy_info:
     - el9
     - el10
     - fedora
+    - leap
     - postgresql
 dependencies: []
