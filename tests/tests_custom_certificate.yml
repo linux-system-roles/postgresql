@@ -27,7 +27,7 @@
             name: fedora.linux_system_roles.certificate
           vars:
             certificate_requests:
-              - name: "{{ __postgresql_cert_directory }}//certs/postgresql_test"
+              - name: "{{ __postgresql_cert_directory }}/certs/postgresql_test"
                 dns: www.example.com
                 ca: self-sign
 
