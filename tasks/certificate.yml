@@ -24,7 +24,11 @@
     - name: Ensure private key directory is traversable
       file:
         path: "{{ __postgresql_cert_directory }}/private"
-        mode: "o+x"
+        group: postgres
+        mode: "0710"
+      when:
+        - ansible_facts['os_family'] == "Suse"
+        - (postgresql_certificates | first)['name'] is not abs
 
     - name: Ensure private key is readable by postgres
       file:
@@ -33,7 +37,9 @@
           first)['name'] }}.key
         owner: postgres
         mode: "0600"
-      when: (postgresql_certificates | first)['name'] is not abs
+      when:
+        - ansible_facts['os_family'] == "Suse"
+        - (postgresql_certificates | first)['name'] is not abs
 
     - name: Install certificate from the default path
       file:
