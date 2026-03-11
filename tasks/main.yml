@@ -82,7 +82,7 @@
 # this is tricky: postgresql-setup calls `systemctl` to query the unit file and
 # state, but that doesn't work in container build environments; so patch them
 # out and replace with static values
-- name: Init DB on non-booted systems
+- name: Init DB on non-booted systems (with postgresql-setup)
   when:
     - not __postgresql_conf.stat.exists
     - not __postgresql_is_booted | bool
