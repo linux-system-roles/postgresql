@@ -76,7 +76,7 @@
   become: true
   become_user: postgres
   command:
-    cmd: initdb -D {{ __postgresql_data_dir }}
+    cmd: "initdb -D {{ __postgresql_data_dir }}"
     creates: "{{ __postgresql_main_conf_file }}"
 
 # this is tricky: postgresql-setup calls `systemctl` to query the unit file and
@@ -107,7 +107,7 @@
   become: true
   become_user: postgres
   command:
-    cmd: initdb -D {{ __postgresql_data_dir }}
+    cmd: "initdb -D {{ __postgresql_data_dir }}"
     creates: "{{ __postgresql_main_conf_file }}"
 
 - name: Enable and start existing instance of postgresql server

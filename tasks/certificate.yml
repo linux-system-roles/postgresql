@@ -21,7 +21,7 @@
         owner: postgres
       when: (postgresql_certificates | first)['name'] is not abs
 
-    - name: Ensure private key directory is traversable
+    - name: Ensure private key directory is traversable by postgres
       file:
         path: "{{ __postgresql_cert_directory }}/private"
         group: postgres

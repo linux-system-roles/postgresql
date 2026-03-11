@@ -10,17 +10,10 @@
         postgresql_password: redhat
       block:
         - name: Load postgresql role platform variables
-          include_vars: "{{ __vars_file }}"
-          loop:
-            - main.yml
-            - "{{ ansible_facts['os_family'] }}.yml"
-            - "{{ ansible_facts['distribution'] }}.yml"
-            - >-
-              {{ ansible_facts['distribution'] ~ '_' ~
-              ansible_facts['distribution_major_version'] }}.yml
-          vars:
-            __vars_file: "{{ playbook_dir }}/roles/linux-system-roles.postgresql/vars/{{ item }}"
-          when: __vars_file is file
+          include_role:
+            name: linux-system-roles.postgresql
+            tasks_from: set_vars.yml
+            public: true
 
         - name: Generate certificate using certificate role
           include_role:
