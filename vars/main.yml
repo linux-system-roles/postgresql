@@ -11,6 +11,8 @@ __postgresql_versions_el9: ["13", "15", "16", "18"]
 __postgresql_versions_el10: ["16", "18"]
 
 __postgresql_data_dir: /var/lib/pgsql/data
+__postgresql_has_setup_cmd: true
+__postgresql_cert_directory: /etc/pki/tls
 
 __postgresql_main_conf_file: "{{ __postgresql_data_dir }}/postgresql.conf"
 __postgresql_hba_conf_file: "{{ __postgresql_data_dir }}/pg_hba.conf"

@@ -1,5 +1,4 @@
 ---
-
 - name: Test PostgreSQL server with ssl support using certificate role
   hosts: all
   tags:
@@ -10,12 +9,18 @@
       vars:
         postgresql_password: redhat
       block:
+        - name: Load postgresql role platform variables
+          include_role:
+            name: linux-system-roles.postgresql
+            tasks_from: set_vars.yml
+            public: true
+
         - name: Generate certificate using certificate role
           include_role:
             name: fedora.linux_system_roles.certificate
           vars:
             certificate_requests:
-              - name: /etc/pki/tls/certs/postgresql_test
+              - name: "{{ __postgresql_cert_directory }}/certs/postgresql_test"
                 dns: www.example.com
                 ca: self-sign
 
@@ -24,14 +29,14 @@
           vars:
             __test_clean_instance: false
             __test_check_unix_socket: false
-            postgresql_cert_name: /etc/pki/tls/certs/postgresql_test
+            postgresql_cert_name: "{{ __postgresql_cert_directory }}/certs/postgresql_test"
             postgresql_ssl_enable: true
             postgresql_pg_hba_conf:
               - type: hostssl
                 database: all
                 user: all
                 auth_method: md5
-                address: '127.0.0.1/32'
+                address: "127.0.0.1/32"
 
         - name: Gather output of psql
           environment:

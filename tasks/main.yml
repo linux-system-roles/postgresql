@@ -59,21 +59,34 @@
       ternary(__postgresql_packages | reject('match', '^@'),
               __postgresql_packages) | list }}"
 
-- name: Init DB on booted systems
+- name: Init DB on booted systems (with postgresql-setup)
   when:
     - not __postgresql_conf.stat.exists
     - __postgresql_is_booted | bool
+    - __postgresql_has_setup_cmd | bool
   command:
     cmd: postgresql-setup --initdb
+    creates: "{{ __postgresql_main_conf_file }}"
+
+- name: Init DB on booted systems (without postgresql-setup)
+  when:
+    - not __postgresql_conf.stat.exists
+    - __postgresql_is_booted | bool
+    - not __postgresql_has_setup_cmd | bool
+  become: true
+  become_user: postgres
+  command:
+    cmd: "initdb -D {{ __postgresql_data_dir }}"
     creates: "{{ __postgresql_main_conf_file }}"
 
 # this is tricky: postgresql-setup calls `systemctl` to query the unit file and
 # state, but that doesn't work in container build environments; so patch them
 # out and replace with static values
-- name: Init DB on non-booted systems
+- name: Init DB on non-booted systems (with postgresql-setup)
   when:
     - not __postgresql_conf.stat.exists
     - not __postgresql_is_booted | bool
+    - __postgresql_has_setup_cmd | bool
   shell:
     cmd: |
       set -euo pipefail
@@ -84,6 +97,17 @@
       chmod a+rx $setup
       $setup --initdb
       rm $setup
+    creates: "{{ __postgresql_main_conf_file }}"
+
+- name: Init DB on non-booted systems (without postgresql-setup)
+  when:
+    - not __postgresql_conf.stat.exists
+    - not __postgresql_is_booted | bool
+    - not __postgresql_has_setup_cmd | bool
+  become: true
+  become_user: postgres
+  command:
+    cmd: "initdb -D {{ __postgresql_data_dir }}"
     creates: "{{ __postgresql_main_conf_file }}"
 
 - name: Enable and start existing instance of postgresql server
@@ -115,8 +139,8 @@
     - name: Enable logging in by password
       replace:
         path: "{{ __postgresql_hba_conf_file }}"
-        regexp: '(peer|ident)$'
-        replace: 'md5'
+        regexp: "(peer|ident)$"
+        replace: "md5"
         backup: true
       notify: Restart postgresql
 
