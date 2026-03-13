@@ -51,13 +51,13 @@
     name: "{{ __actual_packages }}"
     state: present
     use: "{{ (__postgresql_is_ostree | d(false)) |
-      ternary('ansible.posix.rhel_rpm_ostree', omit) }}"
+             ternary('ansible.posix.rhel_rpm_ostree', omit) }}"
   when: __actual_packages | length > 0
   vars:
     __actual_packages: "{{
       (__postgresql_is_ostree | d(false)) |
       ternary(__postgresql_packages | reject('match', '^@'),
-      __postgresql_packages) | list }}"
+              __postgresql_packages) | list }}"
 
 - name: Init DB on booted systems (with postgresql-setup)
   when:
