@@ -4,14 +4,12 @@
   hosts: all
   tags:
     - tests::bootc-e2e
-  gather_facts: false
   tasks:
     - name: Bootc image build preparation
       when: ansible_connection | d("") == "buildah"
       block:
         - name: Run postgresql role
-          include_role:
-            name: linux-system-roles.postgresql
+          include_tasks: tasks/run_role_with_clear_facts.yml
 
         - name: Create QEMU deployment
           delegate_to: localhost

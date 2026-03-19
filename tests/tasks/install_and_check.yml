@@ -3,9 +3,9 @@
 - name: Test default settings
   block:
     - name: Run postgresql role
-      include_role:
-        name: linux-system-roles.postgresql
-        public: true
+      include_tasks: tasks/run_role_with_clear_facts.yml
+      vars:
+        __sr_public: true
       when: __run_role | d(true) | bool
 
     - name: Run postgresql role to set vars only

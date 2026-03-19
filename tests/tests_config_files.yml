@@ -5,10 +5,9 @@
     - name: Run test and cleanup
       block:
         - name: Run role with given config
-          include_role:
-            name: linux-system-roles.postgresql
-            public: true
+          include_tasks: tasks/run_role_with_clear_facts.yml
           vars:
+            __sr_public: true
             postgresql_pg_hba_conf:
               - type: local
                 database: all
