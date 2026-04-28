@@ -1,6 +1,27 @@
 Changelog
 =========
 
+[1.6.0] - 2026-04-28
+--------------------
+
+### New Features
+
+- feat: add SUSE/openSUSE support (#172)
+- feat: add role fingerprints to syslog (#181)
+
+### Other Changes
+
+- ci: tox-lsr version 3.15.0 [citest_skip] (#168)
+- ci: Add Fedora 43, remove Fedora 41 from Testing Farm CI (#169)
+- ci: bump actions/upload-artifact from 6 to 7 (#171)
+- ci: tox-lsr 3.17.0 - container test improvements, use ansible 2.20 for fedora 43 [citest_skip] (#174)
+- ci: tox-lsr 3.17.1 - previous update broke container tests, this fixes them [citest_skip] (#175)
+- test: ensure role gathers the facts it uses by having test clear_facts before include_role (#176)
+- ci: fix yum repos to use devel site instead of old site name [citest_skip] (#177)
+- ci: update header for run_role_with_clear_facts [citest_skip] (#178)
+- ci: Comply with Ansible partner certification checking [citest_skip] (#179)
+- ci: ansible-lint requires dependencies to be installed [citest_skip] (#180)
+
 [1.5.1] - 2026-02-06
 --------------------
 
