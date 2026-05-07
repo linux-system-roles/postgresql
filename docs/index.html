@@ -161,6 +161,8 @@ id="toc-postgresql_certificates">postgresql_certificates</a></li>
 id="toc-postgresql_input_file">postgresql_input_file</a></li>
 <li><a href="#postgresql_server_tuning"
 id="toc-postgresql_server_tuning">postgresql_server_tuning</a></li>
+<li><a href="#postgresql_secure_logging"
+id="toc-postgresql_secure_logging">postgresql_secure_logging</a></li>
 </ul></li>
 <li><a href="#idempotence" id="toc-idempotence">Idempotence</a>
 <ul>
@@ -294,6 +296,19 @@ connection</a>, i.e. a container build, this defaults to
 independent of the actual deployment.</p>
 <p>See the <a href="examples"><code>examples/</code></a> for
 details.</p>
+<h2 id="postgresql_secure_logging">postgresql_secure_logging</h2>
+<p>If <code>true</code>, suppress potentially sensitive output from
+tasks that handle credentials, secrets, and other sensitive data by
+setting <code>no_log: true</code> on those tasks. This prevents
+passwords, API tokens, private keys, and similar sensitive information
+from appearing in Ansible logs and console output.</p>
+<p>If you need to debug issues with credential handling or secret
+management, you can temporarily set
+<code>postgresql_secure_logging: false</code> to see the full output
+from these tasks. However, be aware that this may expose sensitive
+information in logs, so it should only be used in development or
+troubleshooting scenarios.</p>
+<p>Default: <code>true</code></p>
 <h1 id="idempotence">Idempotence</h1>
 <p>This section should cover role behavior for repeated runs.</p>
 <h2 id="password-change">Password change</h2>
