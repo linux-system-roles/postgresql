@@ -23,3 +23,4 @@ postgresql_ssl_enable: false
 #     dns: ['localhost', 'www.example.com']
 #     ca: self-sign
 postgresql_certificates: []
+postgresql_secure_logging: true
