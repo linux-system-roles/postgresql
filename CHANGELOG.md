@@ -1,6 +1,17 @@
 Changelog
 =========
 
+[1.7.0] - 2026-05-07
+--------------------
+
+### New Features
+
+- feat: new variable `postgresql_secure_logging` defaulting to `true` (#184)
+
+### Other Changes
+
+- ci: bump actions/github-script from 8 to 9 (#183)
+
 [1.6.0] - 2026-04-28
 --------------------
 
