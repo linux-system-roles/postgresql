@@ -7,7 +7,7 @@
 
 - name: Gather the package facts
   package_facts:
-  no_log: "{{ ansible_verbosity < 2 }}"
+  no_log: "{{ ansible_verbosity < 3 }}"
 
 - name: Check if requested version is supported in the system (RHEL8)
   fail:
