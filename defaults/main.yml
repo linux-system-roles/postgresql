@@ -24,3 +24,5 @@ postgresql_ssl_enable: false
 #     ca: self-sign
 postgresql_certificates: []
 postgresql_secure_logging: true
+
+__postgresql_write_log_file: false
