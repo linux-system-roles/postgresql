@@ -1,0 +1,195 @@
+# SPDX-License-Identifier: MIT
+---
+argument_specs:
+  main:
+    short_description: The postgresql role.
+    description: >
+      The postgresql role installs and configures a PostgreSQL database
+      server. It supports version selection, optional password
+      configuration, SSL/TLS certificates, server tuning, custom
+      configuration files, and SQL script execution.
+    options:
+      postgresql_version:
+        type: raw
+        default: null
+        description: >
+          The major version of PostgreSQL to install and configure.
+          Accepts a version string such as `13` or `16`, or an
+          integer major version. When unset, the default version
+          depends on the target platform; for example RHEL 10
+          defaults to `16`.
+      postgresql_password:
+        type: raw
+        default: null
+        description: >
+          The password for the PostgreSQL superuser (`postgres`). When
+          set, password authentication is enabled in `pg_hba.conf`.
+          Accepts `null` or a string password value.
+      postgresql_cert_name:
+        type: raw
+        default: null
+        description: >
+          The base path or name of TLS certificate and key files to use
+          for the server, without the `.crt` or `.key` suffix. For
+          example, `/etc/certs/server` refers to `/etc/certs/server.crt`
+          and `/etc/certs/server.key`. Accepts `null` or a string.
+      postgresql_server_tuning:
+        type: raw
+        default: null
+        description: >
+          Whether to apply memory-based tuning settings such as
+          `shared_buffers` and `effective_cache_size` based on system
+          memory. Accepts `null`, `true`, or `false`. When unset,
+          tuning is enabled on booted systems and disabled in container
+          build environments.
+      postgresql_ssl_enable:
+        type: bool
+        default: false
+        description: >
+          Whether to enable SSL/TLS for PostgreSQL connections by
+          setting `ssl = on` in the server configuration.
+      postgresql_certificates:
+        type: list
+        elements: dict
+        default: []
+        description: >
+          A list of certificate request specifications passed to the
+          certificate role for generating TLS certificates used by
+          PostgreSQL.
+        options:
+          name:
+            type: str
+            required: true
+            description: >
+              The name of the certificate. A full path can be used to
+              choose the directory where files will be stored.
+          ca:
+            type: str
+            required: true
+            description: >
+              The CA that will issue the certificate (for example
+              `self-sign` or `ipa`).
+          dns:
+            type: raw
+            description: >
+              A domain name or list of domain names to include in the
+              certificate Subject Alternative Name (SAN).
+          email:
+            type: raw
+            description: >
+              An email address or list of email addresses to include in
+              the certificate Subject Alternative Name (SAN).
+          ip:
+            type: raw
+            description: >
+              An IP address or list of IP addresses to include in the
+              certificate Subject Alternative Name (SAN).
+          auto_renew:
+            type: bool
+            default: true
+            description: >
+              Whether the certificate should be renewed automatically
+              before it expires.
+          owner:
+            type: str
+            description: >
+              The user name or user id for the certificate and key
+              files.
+          group:
+            type: str
+            description: >
+              The group name or group id for the certificate and key
+              files.
+          mode:
+            type: raw
+            description: >
+              The file system permissions for the certificate and key
+              files. Accepts a string (for example `0644`) or an
+              integer.
+          key_size:
+            type: int
+            description: >
+              The key size in bits.
+          common_name:
+            type: str
+            description: >
+              The Common Name requested for the certificate subject.
+          country:
+            type: str
+            description: >
+              The country code requested for the certificate subject.
+          state:
+            type: str
+            description: >
+              The state requested for the certificate subject.
+          locality:
+            type: str
+            description: >
+              The locality requested for the certificate subject.
+          organization:
+            type: str
+            description: >
+              The organization requested for the certificate subject.
+          organizational_unit:
+            type: str
+            description: >
+              The organizational unit requested for the certificate
+              subject.
+          contact_email:
+            type: str
+            description: >
+              The contact email requested for the certificate subject.
+          key_usage:
+            type: list
+            elements: str
+            choices:
+              - digitalSignature
+              - nonRepudiation
+              - keyEncipherment
+              - dataEncipherment
+              - keyAgreement
+              - keyCertSign
+              - cRLSign
+              - encipherOnly
+              - decipherOnly
+            default:
+              - digitalSignature
+              - keyEncipherment
+            description: >
+              The allowed Key Usage extensions for the certificate.
+          extended_key_usage:
+            type: list
+            elements: str
+            default:
+              - id-kp-serverAuth
+              - id-kp-clientAuth
+            description: >
+              The Extended Key Usage attributes for the certificate.
+          run_before:
+            type: str
+            description: >
+              A command to run before saving the certificate.
+          run_after:
+            type: str
+            description: >
+              A command to run after saving the certificate.
+          principal:
+            type: raw
+            description: >
+              A Kerberos principal or list of Kerberos principals.
+          provider:
+            type: str
+            default: certmonger
+            description: >
+              The underlying method used to request and manage the
+              certificate.
+          issuer:
+            type: str
+            description: >
+              The issuer certificate nickname or template name.
+      postgresql_secure_logging:
+        type: bool
+        default: true
+        description: >
+          Whether to suppress logging of sensitive commands such as
+          password changes. Set to `false` for troubleshooting.
