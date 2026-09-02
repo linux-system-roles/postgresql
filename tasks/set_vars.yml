@@ -5,6 +5,19 @@
   when: __postgresql_required_facts |
     difference(ansible_facts.keys() | list) | length > 0
 
+- name: Set default postgresql_version
+  ansible.builtin.set_fact:
+    postgresql_version: "{{ '16' if ansible_facts['os_family'] == 'RedHat'
+      and ansible_facts['distribution'] != 'Fedora'
+      and ansible_facts['distribution_major_version'] == '10'
+      else '13' }}"
+  when: postgresql_version is none
+
+- name: Set default postgresql_server_tuning
+  ansible.builtin.set_fact:
+    postgresql_server_tuning: "{{ false if (ansible_connection | d('')) == 'buildah' else true }}"
+  when: postgresql_server_tuning is none
+
 - name: Record role begin fingerprint
   sr_fingerprint:
     status: begin

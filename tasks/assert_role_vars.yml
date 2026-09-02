@@ -1,0 +1,122 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Assert postgresql_version is a string or integer
+  ansible.builtin.assert:
+    that:
+      - >-
+        postgresql_version is string
+        or (postgresql_version | type_debug) == 'int'
+    fail_msg: >-
+      postgresql_version must be a string or integer,
+      got {{ postgresql_version | type_debug }}
+  when:
+    - postgresql_version is defined
+    - postgresql_version is not none
+
+- name: Assert postgresql_password is null or a string
+  ansible.builtin.assert:
+    that:
+      - >-
+        (postgresql_password is none)
+        or (postgresql_password is string)
+    fail_msg: >-
+      postgresql_password must be null or a string,
+      got {{ postgresql_password | type_debug }}
+
+- name: Assert postgresql_cert_name is null or a string
+  ansible.builtin.assert:
+    that:
+      - >-
+        (postgresql_cert_name is none)
+        or (postgresql_cert_name is string)
+    fail_msg: >-
+      postgresql_cert_name must be null or a string,
+      got {{ postgresql_cert_name | type_debug }}
+
+- name: Assert postgresql_server_tuning is null or a boolean
+  ansible.builtin.assert:
+    that:
+      - >-
+        (postgresql_server_tuning is none)
+        or (postgresql_server_tuning is sameas true)
+        or (postgresql_server_tuning is sameas false)
+    fail_msg: >-
+      postgresql_server_tuning must be null or a boolean,
+      got {{ postgresql_server_tuning | type_debug }}
+
+- name: Assert dns in postgresql_certificates is a string or list of strings
+  ansible.builtin.assert:
+    that:
+      - >-
+        item.dns is string
+        or (item.dns is sequence and item.dns is not mapping
+            and item.dns | reject('string') | list | length == 0)
+    fail_msg: >-
+      postgresql_certificates[{{ idx }}].dns must be a string or list of
+      strings, got {{ item.dns | type_debug }}
+  loop: "{{ postgresql_certificates }}"
+  loop_control:
+    index_var: idx
+    label: "{{ item.name | d('unnamed') }}"
+  when: item.dns is defined
+
+- name: Assert email in postgresql_certificates is a string or list of strings
+  ansible.builtin.assert:
+    that:
+      - >-
+        item.email is string
+        or (item.email is sequence and item.email is not mapping
+            and item.email | reject('string') | list | length == 0)
+    fail_msg: >-
+      postgresql_certificates[{{ idx }}].email must be a string or list of
+      strings, got {{ item.email | type_debug }}
+  loop: "{{ postgresql_certificates }}"
+  loop_control:
+    index_var: idx
+    label: "{{ item.name | d('unnamed') }}"
+  when: item.email is defined
+
+- name: Assert ip in postgresql_certificates is a string or list of strings
+  ansible.builtin.assert:
+    that:
+      - >-
+        item.ip is string
+        or (item.ip is sequence and item.ip is not mapping
+            and item.ip | reject('string') | list | length == 0)
+    fail_msg: >-
+      postgresql_certificates[{{ idx }}].ip must be a string or list of
+      strings, got {{ item.ip | type_debug }}
+  loop: "{{ postgresql_certificates }}"
+  loop_control:
+    index_var: idx
+    label: "{{ item.name | d('unnamed') }}"
+  when: item.ip is defined
+
+- name: Assert principal in postgresql_certificates is a string or list of strings
+  ansible.builtin.assert:
+    that:
+      - >-
+        item.principal is string
+        or (item.principal is sequence and item.principal is not mapping
+            and item.principal | reject('string') | list | length == 0)
+    fail_msg: >-
+      postgresql_certificates[{{ idx }}].principal must be a string or list of
+      strings, got {{ item.principal | type_debug }}
+  loop: "{{ postgresql_certificates }}"
+  loop_control:
+    index_var: idx
+    label: "{{ item.name | d('unnamed') }}"
+  when: item.principal is defined
+
+- name: Assert mode in postgresql_certificates is a string or integer
+  ansible.builtin.assert:
+    that:
+      - (item.mode | type_debug) in ['str', 'int', 'unicode']
+    fail_msg: >-
+      postgresql_certificates[{{ idx }}].mode must be a string or integer,
+      got {{ item.mode | type_debug }}
+  loop: "{{ postgresql_certificates }}"
+  loop_control:
+    index_var: idx
+    label: "{{ item.name | d('unnamed') }}"
+  when: item.mode is defined

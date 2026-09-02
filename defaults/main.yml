@@ -4,16 +4,13 @@
 # This file also serves as a documentation for such a variables.
 
 # Examples of role input variables:
-postgresql_version: "{{ '16' if ansible_facts['os_family'] == 'RedHat'
-  and ansible_facts['distribution'] != 'Fedora'
-  and ansible_facts['distribution_major_version'] == '10'
-  else '13' }}"
+postgresql_version: null
 postgresql_password: null
 postgresql_cert_name: null
 # the container build environment's RAM is independent from the deployment
 # (regardless if it's a bootc or system container one), so disable tuning there
 # by default
-postgresql_server_tuning: "{{ false if (ansible_connection | d('')) == 'buildah' else true }}"
+postgresql_server_tuning: null
 postgresql_ssl_enable: false
 
 # If you want to generate the certificas in the postgresql role
