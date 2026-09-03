@@ -4,7 +4,7 @@
   ansible.builtin.assert:
     that:
       - >-
-        postgresql_version is string
+        (postgresql_version is string and postgresql_version is match("^[1-9][0-9]*$"))
         or (postgresql_version | type_debug) == 'int'
     fail_msg: >-
       postgresql_version must be a string or integer,

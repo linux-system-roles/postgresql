@@ -198,6 +198,39 @@
               assert_role_vars should reject postgresql_certificates
               entries where dns is an integer
 
+        - name: Assert repeated role invocations resolve current postgresql_version
+          block:
+            - name: Run role set_vars with postgresql_version 13
+              ansible.builtin.include_role:
+                name: linux-system-roles.postgresql
+                tasks_from: set_vars.yml
+                public: true
+              vars:
+                postgresql_version: "13"
+
+            - name: Check effective version is 13
+              ansible.builtin.assert:
+                that:
+                  - __postgresql_version | string == '13'
+                fail_msg: >-
+                  __postgresql_version should be 13 after explicit input
+
+            - name: Run role set_vars with postgresql_version 16
+              ansible.builtin.include_role:
+                name: linux-system-roles.postgresql
+                tasks_from: set_vars.yml
+                public: true
+              vars:
+                postgresql_version: "16"
+
+            - name: Check effective version is 16 not a stale value
+              ansible.builtin.assert:
+                that:
+                  - __postgresql_version | string == '16'
+                fail_msg: >-
+                  __postgresql_version should be 16 on second invocation,
+                  got {{ __postgresql_version | default('unset') }}
+
       always:
         - name: Clear test facts
           ansible.builtin.set_fact:

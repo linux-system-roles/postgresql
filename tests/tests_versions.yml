@@ -19,7 +19,7 @@
 
     - name: Save default postgresql_version
       set_fact:
-        __default_version: "{{ postgresql_version }}"
+        __default_version: "{{ __postgresql_version }}"
 
     - name: Install and cleanup the other supported versions
       include_tasks: tasks/install_and_check.yml

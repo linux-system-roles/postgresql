@@ -13,9 +13,9 @@
       - postgresql
       - postgresql-any
       - postgresql-private-libs
-      - postgresql{{ postgresql_version }}
-      - postgresql{{ postgresql_version }}-any
-      - postgresql{{ postgresql_version }}-private-libs
+      - postgresql{{ __postgresql_version }}
+      - postgresql{{ __postgresql_version }}-any
+      - postgresql{{ __postgresql_version }}-private-libs
 
 - name: Stop and disable postgresql service
   service:
