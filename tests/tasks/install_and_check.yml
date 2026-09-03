@@ -94,7 +94,7 @@
       register: __version
       changed_when: false
       failed_when: not __version.stdout is
-        search(" " ~ postgresql_version ~ "[^0-9]")
+        search(" " ~ __postgresql_version ~ "[^0-9]")
 
   always:
     - name: Clean up

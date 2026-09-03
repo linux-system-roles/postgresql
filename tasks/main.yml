@@ -18,7 +18,7 @@
   when:
     - ansible_facts["os_family"] == "RedHat"
     - ansible_facts["distribution_major_version"] == "8"
-    - postgresql_version | string not in __postgresql_versions_el8
+    - __postgresql_version | string not in __postgresql_versions_el8
 
 - name: Check if requested version is supported in system (RHEL9)
   fail:
@@ -26,7 +26,7 @@
   when:
     - ansible_facts["os_family"] == "RedHat"
     - ansible_facts["distribution_major_version"] == "9"
-    - postgresql_version | string not in __postgresql_versions_el9
+    - __postgresql_version | string not in __postgresql_versions_el9
 
 - name: Check if requested version is supported in system (RHEL10)
   fail:
@@ -36,17 +36,17 @@
   when:
     - ansible_facts["os_family"] == "RedHat"
     - ansible_facts["distribution_major_version"] == "10"
-    - postgresql_version | string not in __postgresql_versions_el10
+    - __postgresql_version | string not in __postgresql_versions_el10
 
 - name: Check requested and installed version of Postgresql
   fail:
     msg: >-
-      Setting version {{ postgresql_version }} while
+      Setting version {{ __postgresql_version }} while
       {{ ansible_facts.packages['postgresql'][0].version }} is installed
   when:
     - "'postgresql' in ansible_facts.packages"
     - ansible_facts.packages["postgresql"][0].version |
-      regex_search('([0-9]*).', '\\1') | first != postgresql_version | string
+      regex_search('([0-9]*).', '\\1') | first != __postgresql_version | string
 
 # rpm ostree pkg mgr cannot handle @groups/modules
 # so just assume the packages are present

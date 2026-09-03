@@ -5,18 +5,21 @@
   when: __postgresql_required_facts |
     difference(ansible_facts.keys() | list) | length > 0
 
-- name: Set default postgresql_version
+- name: Set postgresql effective value defaults
   ansible.builtin.set_fact:
-    postgresql_version: "{{ '16' if ansible_facts['os_family'] == 'RedHat'
+    __postgresql_version_default: "{{ '16' if ansible_facts['os_family'] == 'RedHat'
       and ansible_facts['distribution'] != 'Fedora'
       and ansible_facts['distribution_major_version'] == '10'
       else '13' }}"
-  when: postgresql_version is none
+    __postgresql_server_tuning_default: "{{ false if (ansible_connection | d('')) == 'buildah' else true }}"
 
-- name: Set default postgresql_server_tuning
+- name: Set postgresql effective values from user input or defaults
   ansible.builtin.set_fact:
-    postgresql_server_tuning: "{{ false if (ansible_connection | d('')) == 'buildah' else true }}"
-  when: postgresql_server_tuning is none
+    __postgresql_version: "{{ postgresql_version if postgresql_version is not none
+      else __postgresql_version_default }}"
+    __postgresql_server_tuning: "{{ postgresql_server_tuning
+      if postgresql_server_tuning is not none
+      else __postgresql_server_tuning_default }}"
 
 - name: Record role begin fingerprint
   sr_fingerprint:
