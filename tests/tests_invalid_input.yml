@@ -198,7 +198,7 @@
               assert_role_vars should reject postgresql_certificates
               entries where dns is an integer
 
-        - name: Assert repeated role invocations resolve current postgresql_version
+        - name: Assert repeated role invocations resolve current inputs
           block:
             - name: Run role set_vars with postgresql_version 13
               ansible.builtin.include_role:
@@ -215,6 +215,9 @@
                 fail_msg: >-
                   __postgresql_version should be 13 after explicit input
 
+            - name: Clear facts before second role invocation
+              ansible.builtin.meta: clear_facts
+
             - name: Run role set_vars with postgresql_version 16
               ansible.builtin.include_role:
                 name: linux-system-roles.postgresql
@@ -230,6 +233,44 @@
                 fail_msg: >-
                   __postgresql_version should be 16 on second invocation,
                   got {{ __postgresql_version | default('unset') }}
+
+            - name: Clear facts before third role invocation
+              ansible.builtin.meta: clear_facts
+
+            - name: Run role set_vars with postgresql_server_tuning false
+              ansible.builtin.include_role:
+                name: linux-system-roles.postgresql
+                tasks_from: set_vars.yml
+                public: true
+              vars:
+                postgresql_server_tuning: false
+
+            - name: Check effective server tuning is false
+              ansible.builtin.assert:
+                that:
+                  - __postgresql_server_tuning is sameas false
+                fail_msg: >-
+                  __postgresql_server_tuning should be false after
+                  explicit input
+
+            - name: Clear facts before fourth role invocation
+              ansible.builtin.meta: clear_facts
+
+            - name: Run role set_vars with postgresql_server_tuning true
+              ansible.builtin.include_role:
+                name: linux-system-roles.postgresql
+                tasks_from: set_vars.yml
+                public: true
+              vars:
+                postgresql_server_tuning: true
+
+            - name: Check effective server tuning is true not a stale value
+              ansible.builtin.assert:
+                that:
+                  - __postgresql_server_tuning is sameas true
+                fail_msg: >-
+                  __postgresql_server_tuning should be true on second
+                  invocation, got {{ __postgresql_server_tuning | default('unset') }}
 
       always:
         - name: Clear test facts
