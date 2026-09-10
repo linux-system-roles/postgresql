@@ -273,6 +273,10 @@
                   invocation, got {{ __postgresql_server_tuning | default('unset') }}
 
       always:
+        - name: Clean up
+          include_tasks: tasks/clean_instance.yml
+          tags: tests::cleanup
+
         - name: Clear test facts
           ansible.builtin.set_fact:
             __invalid_input_missing_ca_failed:
