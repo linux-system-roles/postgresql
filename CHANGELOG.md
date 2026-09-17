@@ -1,6 +1,27 @@
 Changelog
 =========
 
+[1.9.0] - 2026-09-17
+--------------------
+
+### New Features
+
+- feat: Argument spec implementation for postgresql role (#209)
+
+### Other Changes
+
+- ci: use commit hash for github action, add persist-credentials false [citest_skip] (#202)
+- ci: refactor build_docs so that pandoc runs in isolated read-only job [citest_skip] (#203)
+- ci: use exact match for systemroller instead of contains [citest_skip] (#204)
+- ci(build_docs): fix pandoc container syntax [citest_skip] (#205)
+- ci: [citest_skip] bump myrotvorets/set-commit-status-action from 2774e1f040c82ed70a76b4b5cd53bb11ffaedd0a to c0f880c99d91381c6fdb97726f03feb8004409b4 (#206)
+- ci: [citest_skip] bump actions/download-artifact from 7.0.0 to 8.0.1 (#207)
+- ci: [citest_skip] bump codespell-project/actions-codespell from 2.1 to 2.2 (#208)
+- refactor: Relax collection constraints, gate vendored modules by python version, update ci versions [citest_skip] (#210)
+- ci: do not run ci tests by default, require citest comment or label [citest_skip] (#211)
+- ci: replace weekly_ci with periodic_ci, stagger schedules [citest_skip] (#212)
+- ci: update status when action triggered by issue comment (#213)
+
 [1.8.0] - 2026-08-06
 --------------------
 
