@@ -42,11 +42,15 @@
   fail:
     msg: >-
       Setting version {{ __postgresql_version }} while
-      {{ ansible_facts.packages['postgresql'][0].version }} is installed
+      {{ __installed_versions | join(', ') }} is installed
   when:
-    - "'postgresql' in ansible_facts.packages"
-    - ansible_facts.packages["postgresql"][0].version |
-      regex_search('([0-9]*).', '\\1') | first != __postgresql_version | string
+    - __installed_versions | length > 0
+    - __installed_versions != [__postgresql_version | string]
+  vars:
+    __installed_versions: "{{ ansible_facts.packages | dict2items |
+      selectattr('key', 'match', __postgresql_version_packages) |
+      map(attribute='value') | flatten | map(attribute='version') |
+      map('regex_search', '^([0-9]+)', '\\1') | map('first') | unique | list }}"
 
 # rpm ostree pkg mgr cannot handle @groups/modules
 # so just assume the packages are present
@@ -62,6 +66,42 @@
       (__postgresql_is_ostree | d(false)) |
       ternary(__postgresql_packages | reject('match', '^@'),
               __postgresql_packages) | list }}"
+  register: __postgresql_package_result
+
+# A staged install reports ok on re-runs, so ask rpm (by provides) if it is live.
+- name: Check whether the packages are live on a transactional update system
+  command:  # noqa command-instead-of-module
+    argv: "{{ ['rpm', '-q', '--whatprovides'] + __postgresql_packages }}"
+  register: __postgresql_packages_live
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  when: __postgresql_is_transactional | d(false)
+
+- name: Handle reboot for transactional update systems
+  when:
+    - __postgresql_is_transactional | d(false)
+    - __postgresql_package_result is changed or
+      (__postgresql_packages_live.rc | d(0)) != 0
+  block:
+    - name: Notify user that reboot is needed to apply changes
+      debug:
+        msg: >
+          Reboot required to apply changes due to transactional updates.
+
+    - name: Reboot transactional update systems
+      reboot:
+        msg: Rebooting the system to apply transactional update changes.
+      when:
+        - postgresql_transactional_update_reboot_ok is not none
+        - postgresql_transactional_update_reboot_ok | bool
+
+    - name: Fail if reboot is needed and not set
+      fail:
+        msg: >
+          Reboot is required but not allowed. Please set 'postgresql_transactional_update_reboot_ok' to proceed.
+      when:
+        - postgresql_transactional_update_reboot_ok is none
 
 - name: Init DB on booted systems (with postgresql-setup)
   when:

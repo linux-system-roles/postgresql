@@ -10,6 +10,7 @@
     __postgresql_version_default: "{{ '16' if ansible_facts['os_family'] == 'RedHat'
       and ansible_facts['distribution'] != 'Fedora'
       and ansible_facts['distribution_major_version'] == '10'
+      else '18' if ansible_facts['os_family'] == 'Suse'
       else '13' }}"
     __postgresql_server_tuning_default: "{{ false if (ansible_connection | d('')) == 'buildah' else true }}"
 
@@ -42,6 +43,18 @@
     - name: Set flag to indicate system is ostree
       set_fact:
         __postgresql_is_ostree: "{{ __ostree_booted_stat.stat.exists }}"
+
+- name: Determine if system is transactional update and set flag
+  when: __postgresql_is_transactional is not defined
+  block:
+    - name: Check if transactional-update exists in /sbin
+      stat:
+        path: /sbin/transactional-update
+      register: __transactional_update_stat
+
+    - name: Set flag if transactional-update exists
+      set_fact:
+        __postgresql_is_transactional: "{{ __transactional_update_stat.stat.exists }}"
 
 - name: Determine if system is booted with systemd
   when: __postgresql_is_booted is not defined
