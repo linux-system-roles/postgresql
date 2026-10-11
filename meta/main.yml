@@ -23,4 +23,6 @@ galaxy_info:
     - fedora
     - leap
     - postgresql
+    - sles
+    - sles16
 dependencies: []

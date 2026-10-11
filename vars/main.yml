@@ -6,6 +6,8 @@
 
 # Examples of non-distribution specific (generic) internal variables:
 __postgresql_packages: [postgresql-server]
+# installed packages whose version is the server's major version
+__postgresql_version_packages: "^postgresql$"
 __postgresql_versions_el8: ["10", "12", "13", "15", "16"]
 __postgresql_versions_el9: ["13", "15", "16", "18"]
 __postgresql_versions_el10: ["16", "18"]

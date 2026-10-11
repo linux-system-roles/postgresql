@@ -24,6 +24,7 @@ ansible-galaxy collection install -vv -r meta/collection-requirements.yml
 ### postgresql_version
 
 You can set the version of the PostgreSQL server to 10, 12, 13, 15, 16 or 18.
+On SUSE, it can be set to 16, 17 or 18, and the default is 18.
 
 ```yaml
 postgresql_version: "13"
@@ -163,6 +164,18 @@ these tasks. However, be aware that this may expose sensitive information in
 logs, so it should only be used in development or troubleshooting scenarios.
 
 Default: `true`
+
+### postgresql_transactional_update_reboot_ok
+
+This variable is used to handle reboots required by transactional updates. If a
+transactional update requires a reboot, the role will proceed with the reboot if
+`postgresql_transactional_update_reboot_ok` is set to `true`. If set to `false`, the
+role will notify the user that a reboot is required, allowing for custom
+handling of the reboot requirement. If this variable is not set, the role will
+fail to ensure the reboot requirement is not overlooked. For non-transactional
+update systems, this variable is ignored.
+
+Default: `null`
 
 ## Idempotence
 

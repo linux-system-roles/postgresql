@@ -2,6 +2,9 @@
 ---
 # SUSE-specific variables
 # SUSE does not have postgresql-setup, initdb is called directly
-__postgresql_packages: [postgresql-server]
+# SUSE ships each major version as its own package, so install the requested one
+__postgresql_packages: ["postgresql{{ __postgresql_version }}-server"]
+__postgresql_version_packages: "^postgresql[0-9]+-server$"
+__postgresql_versions_suse: ["16", "17", "18"]
 __postgresql_has_setup_cmd: false
 __postgresql_cert_directory: /etc/ssl

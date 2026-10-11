@@ -22,4 +22,7 @@ postgresql_ssl_enable: false
 postgresql_certificates: []
 postgresql_secure_logging: true
 
+# Transactional update reboot: true reboots, false only notifies, null fails
+postgresql_transactional_update_reboot_ok: null
+
 __postgresql_write_log_file: false
