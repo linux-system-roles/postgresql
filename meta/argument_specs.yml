@@ -201,3 +201,5 @@ argument_specs:
           to `true` to allow reboots, `false` to disallow reboots, or
           leave unset so that the role will fail to ensure the reboot
           requirement is not overlooked. Accepts a boolean value or `null`.
+          Only managed nodes whose OS uses transactional updates read it;
+          on other systems it is ignored.
