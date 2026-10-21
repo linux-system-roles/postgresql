@@ -175,6 +175,10 @@ handling of the reboot requirement. If this variable is not set, the role will
 fail to ensure the reboot requirement is not overlooked. For non-transactional
 update systems, this variable is ignored.
 
+```yaml
+postgresql_transactional_update_reboot_ok: true
+```
+
 Default: `null`
 
 ## Idempotence
