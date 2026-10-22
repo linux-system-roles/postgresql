@@ -2,6 +2,13 @@
 ---
 - name: Verify invalid parameters are rejected
   hosts: all
+  vars:
+    __invalid_input_failure_messages: >-
+      {{ ([ansible_failed_result.msg | default('') | string,
+           ansible_failed_result.msg.msg | default('') | string]
+          + (ansible_failed_result.results | default([])
+             | map(attribute='msg') | map('default', '') | list))
+         | join(' ') }}
   tasks:
     - name: Run invalid input tests
       block:
@@ -23,8 +30,8 @@
                   ansible.builtin.set_fact:
                     __invalid_input_missing_ca_failed: true
                   when: >-
-                    'missing required arguments' in
-                    (ansible_failed_result | default({}) | to_json)
+                    'missing required arguments: ca found in postgresql_certificates'
+                    in __invalid_input_failure_messages
 
             - name: Assert missing ca was rejected
               ansible.builtin.assert:
@@ -44,11 +51,13 @@
                 - name: Mark invalid postgresql_ssl_enable type rejected
                   ansible.builtin.set_fact:
                     __invalid_input_ssl_enable_type_failed: true
-                  when: >-
-                    'postgresql_ssl_enable' in
-                    (ansible_failed_result | default({}) | to_json)
-                    and 'bool' in
-                    (ansible_failed_result | default({}) | to_json | lower)
+                  when:
+                    - >-
+                      "argument 'postgresql_ssl_enable' is of type" in
+                      __invalid_input_failure_messages
+                    - >-
+                      'unable to convert to bool' in
+                      __invalid_input_failure_messages
 
             - name: Assert invalid postgresql_ssl_enable type was rejected
               ansible.builtin.assert:
@@ -68,11 +77,13 @@
                 - name: Mark invalid postgresql_secure_logging type rejected
                   ansible.builtin.set_fact:
                     __invalid_input_secure_logging_type_failed: true
-                  when: >-
-                    'postgresql_secure_logging' in
-                    (ansible_failed_result | default({}) | to_json)
-                    and 'bool' in
-                    (ansible_failed_result | default({}) | to_json | lower)
+                  when:
+                    - >-
+                      "argument 'postgresql_secure_logging' is of type" in
+                      __invalid_input_failure_messages
+                    - >-
+                      'unable to convert to bool' in
+                      __invalid_input_failure_messages
 
             - name: Assert invalid postgresql_secure_logging type was rejected
               ansible.builtin.assert:
@@ -94,8 +105,8 @@
               ansible.builtin.set_fact:
                 __invalid_input_version_dict_failed: true
               when: >-
-                'postgresql_version must be' in
-                (ansible_failed_result | default({}) | to_json)
+                'postgresql_version must be a string or integer, got dict'
+                in __invalid_input_failure_messages
 
         - name: Assert postgresql_version as dict was rejected
           ansible.builtin.assert:
@@ -116,8 +127,8 @@
               ansible.builtin.set_fact:
                 __invalid_input_password_int_failed: true
               when: >-
-                'postgresql_password must be' in
-                (ansible_failed_result | default({}) | to_json)
+                'postgresql_password must be null or a string, got int'
+                in __invalid_input_failure_messages
 
         - name: Assert postgresql_password as integer was rejected
           ansible.builtin.assert:
@@ -138,8 +149,8 @@
               ansible.builtin.set_fact:
                 __invalid_input_cert_name_int_failed: true
               when: >-
-                'postgresql_cert_name must be' in
-                (ansible_failed_result | default({}) | to_json)
+                'postgresql_cert_name must be null or a string, got int'
+                in __invalid_input_failure_messages
 
         - name: Assert postgresql_cert_name as integer was rejected
           ansible.builtin.assert:
@@ -160,8 +171,8 @@
               ansible.builtin.set_fact:
                 __invalid_input_server_tuning_int_failed: true
               when: >-
-                'postgresql_server_tuning must be' in
-                (ansible_failed_result | default({}) | to_json)
+                'postgresql_server_tuning must be null or a boolean, got int'
+                in __invalid_input_failure_messages
 
         - name: Assert postgresql_server_tuning as integer was rejected
           ansible.builtin.assert:
@@ -185,10 +196,8 @@
               ansible.builtin.set_fact:
                 __invalid_input_cert_dns_int_failed: true
               when: >-
-                'postgresql_certificates' in
-                (ansible_failed_result | default({}) | to_json)
-                and '.dns must be' in
-                (ansible_failed_result | default({}) | to_json)
+                'postgresql_certificates[0].dns must be a string or list of strings, got int'
+                in __invalid_input_failure_messages
 
         - name: Assert postgresql_certificates dns as integer was rejected
           ansible.builtin.assert:
