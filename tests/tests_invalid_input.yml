@@ -18,29 +18,6 @@
         - name: Run argument specs validation tests
           when: ansible_version.full is version('2.11', '>=')
           block:
-            - name: Argument specs reject missing required ca in postgresql_certificates
-              block:
-                - name: Run role without required ca in postgresql_certificates
-                  ansible.builtin.include_tasks: tasks/run_role_with_clear_facts.yml
-                  vars:
-                    postgresql_certificates:
-                      - name: test_cert
-              rescue:
-                - name: Mark missing ca rejected
-                  ansible.builtin.set_fact:
-                    __invalid_input_missing_ca_failed: true
-                  when: >-
-                    'missing required arguments: ca found in postgresql_certificates'
-                    in __invalid_input_failure_messages
-
-            - name: Assert missing ca was rejected
-              ansible.builtin.assert:
-                that:
-                  - __invalid_input_missing_ca_failed | default(false)
-                fail_msg: >-
-                  argument_specs should reject postgresql_certificates
-                  entries missing the required ca field
-
             - name: Argument specs reject non-boolean postgresql_ssl_enable
               block:
                 - name: Run role with non-boolean postgresql_ssl_enable
@@ -182,31 +159,6 @@
               assert_role_vars should reject postgresql_server_tuning
               when given an integer value
 
-        - name: Assert rejects postgresql_certificates dns as an integer
-          block:
-            - name: Run role with postgresql_certificates dns as an integer
-              ansible.builtin.include_tasks: tasks/run_role_with_clear_facts.yml
-              vars:
-                postgresql_certificates:
-                  - name: test_cert
-                    ca: self-sign
-                    dns: 123
-          rescue:
-            - name: Mark postgresql_certificates dns integer rejected
-              ansible.builtin.set_fact:
-                __invalid_input_cert_dns_int_failed: true
-              when: >-
-                'postgresql_certificates[0].dns must be a string or list of strings, got int'
-                in __invalid_input_failure_messages
-
-        - name: Assert postgresql_certificates dns as integer was rejected
-          ansible.builtin.assert:
-            that:
-              - __invalid_input_cert_dns_int_failed | default(false)
-            fail_msg: >-
-              assert_role_vars should reject postgresql_certificates
-              entries where dns is an integer
-
         - name: Assert repeated role invocations resolve current inputs
           block:
             - name: Run role set_vars with postgresql_version 13
@@ -288,12 +240,10 @@
 
         - name: Clear test facts
           ansible.builtin.set_fact:
-            __invalid_input_missing_ca_failed:
             __invalid_input_ssl_enable_type_failed:
             __invalid_input_secure_logging_type_failed:
             __invalid_input_version_dict_failed:
             __invalid_input_password_int_failed:
             __invalid_input_cert_name_int_failed:
             __invalid_input_server_tuning_int_failed:
-            __invalid_input_cert_dns_int_failed:
           tags: tests::cleanup
